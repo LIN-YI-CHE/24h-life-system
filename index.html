@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     /* ── Gaming HUD Palette ── */
@@ -1035,6 +1036,241 @@
     .phase-nav { grid-template-columns: repeat(3, 1fr); }
     .time-input { width: 110px; }
   }
+
+  /* ═══════════════ SYNC INDICATOR (header) ═══════════════ */
+  .sync-zone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .sync-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: var(--f-mono);
+    font-size: 0.66rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: all 0.25s;
+  }
+  .sync-indicator::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    box-shadow: 0 0 4px currentColor;
+    flex-shrink: 0;
+  }
+  .sync-indicator.local   { color: var(--text-dim); }
+  .sync-indicator.local::before { background: var(--muted); }
+  .sync-indicator.syncing { color: var(--warn); border-color: rgba(255,184,0,0.35); }
+  .sync-indicator.syncing::before { background: var(--warn); box-shadow: 0 0 6px var(--warn); animation: statusPulse 1.2s ease-in-out infinite; }
+  .sync-indicator.synced  { color: var(--win);  border-color: rgba(0,255,136,0.35); }
+  .sync-indicator.synced::before  { background: var(--win);  box-shadow: 0 0 6px var(--win); }
+  .sync-indicator.error   { color: var(--danger); border-color: rgba(255,53,85,0.4); }
+  .sync-indicator.error::before   { background: var(--danger); box-shadow: 0 0 6px var(--danger); animation: statusPulse 1s ease-in-out infinite; }
+  .sync-indicator.offline { color: var(--muted); }
+
+  .user-menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--f-mono);
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+  .user-email {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .btn-auth {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-family: var(--f-head);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-auth:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 10px rgba(0,229,255,0.2);
+  }
+  .btn-auth.danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    box-shadow: 0 0 10px rgba(255,53,85,0.2);
+  }
+  .btn-auth.primary {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,229,255,0.08);
+    text-shadow: 0 0 4px rgba(0,229,255,0.4);
+  }
+
+  /* ═══════════════ LOGIN MODAL ═══════════════ */
+  .login-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(5,7,15,0.88);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.25s ease-out;
+  }
+  .login-modal.active { display: flex; }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .login-card {
+    width: 100%;
+    max-width: 440px;
+    background: linear-gradient(180deg, var(--card), var(--card-2));
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 30px 28px 26px;
+    position: relative;
+    box-shadow: 0 0 40px rgba(0,229,255,0.2), 0 20px 60px rgba(0,0,0,0.6);
+    animation: loginIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes loginIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .login-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 20px;
+    width: 70px; height: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .login-close {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 6px 10px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .login-close:hover { color: var(--danger); }
+  .login-title {
+    font-family: var(--f-head);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(0,229,255,0.5);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .login-title::before {
+    content: '◢';
+    font-size: 1.1rem;
+  }
+  .login-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 22px;
+    line-height: 1.65;
+  }
+  .login-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: var(--f-mono);
+    outline: none;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+  .login-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,229,255,0.15), 0 0 12px rgba(0,229,255,0.2);
+  }
+  .login-input::placeholder { color: var(--muted); }
+  .login-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--accent), #0099D8);
+    border: 1px solid var(--accent);
+    color: #000;
+    font-family: var(--f-head);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 16px rgba(0,229,255,0.3);
+  }
+  .login-btn:hover:not(:disabled) {
+    box-shadow: 0 0 24px rgba(0,229,255,0.55);
+    transform: translateY(-1px);
+  }
+  .login-btn:disabled {
+    opacity: 0.45;
+    cursor: wait;
+  }
+  .login-status {
+    margin-top: 16px;
+    padding: 11px 13px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    display: none;
+  }
+  .login-status.active { display: block; }
+  .login-status.success {
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.35);
+    color: var(--win);
+  }
+  .login-status.error {
+    background: rgba(255,53,85,0.08);
+    border: 1px solid rgba(255,53,85,0.35);
+    color: var(--danger);
+  }
+  .login-hint {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .login-hint strong { color: var(--text-dim); }
 </style>
 </head>
 <body>
@@ -1046,7 +1282,38 @@
     <div class="streak-strip-grid" id="streakGrid"></div>
     <div class="streak-counter"><span id="streakCount">0</span></div>
   </div>
-  <div class="date-badge" id="dateBadge">載入中…</div>
+  <div class="sync-zone">
+    <div class="sync-indicator local" id="syncIndicator" title="同步狀態">● 本地</div>
+    <div class="user-menu" id="userMenu">
+      <button class="btn-auth primary" id="signInBtn" onclick="openLogin()">登入同步</button>
+    </div>
+    <div class="date-badge" id="dateBadge">載入中…</div>
+  </div>
+</div>
+
+<!-- ═══════════════ LOGIN MODAL ═══════════════ -->
+<div class="login-modal" id="loginModal" role="dialog" aria-labelledby="loginTitle">
+  <div class="login-card">
+    <button class="login-close" onclick="closeLogin()" aria-label="關閉">✕</button>
+    <div class="login-title" id="loginTitle">Neural Access</div>
+    <div class="login-subtitle">
+      輸入 email，系統會寄一封登入連結給你。點開連結就完成登入，之後資料會在所有裝置間自動同步。
+    </div>
+    <input
+      type="email"
+      class="login-input"
+      id="loginEmail"
+      placeholder="your@email.com"
+      autocomplete="email"
+      spellcheck="false"
+    >
+    <button class="login-btn" id="loginSubmit" onclick="sendMagicLink()">📡 寄送登入連結</button>
+    <div class="login-status" id="loginStatus"></div>
+    <div class="login-hint">
+      <strong>不用密碼。</strong>每次登入都用 email 點連結，安全又免記。
+      Session 會保留 30 天，期間不用重新登入。
+    </div>
+  </div>
 </div>
 
 <!-- ─── Marquee (連線記錄守則 跑馬燈) ─── -->
@@ -1437,6 +1704,20 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════ SUPABASE CLIENT ═══════════════
+// 注意：anon/publishable key 是設計公開的，RLS 保護後端資料
+const SUPABASE_URL      = 'https://ajnyiklfrglluxgjqptw.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_0hJfE7BftPKAfNeB8D6RvQ_GsZ8MPpr';
+
+const sb = (window.supabase && window.supabase.createClient)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    })
+  : null;
+
+let currentUser  = null;
+let cloudSaveTimer = null;
+
 // ─── State ───
 let state = {
   nightChecks: {},
@@ -1467,7 +1748,8 @@ let state = {
 };
 
 const KEY = 'life24h_v2';
-function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+function saveLocal() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+function save() { saveLocal(); scheduleCloudSave(); }
 function load() {
   try {
     const d = localStorage.getItem(KEY);
@@ -1938,6 +2220,237 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// ═══════════════ CLOUD SYNC ═══════════════
+function setSyncStatus(s) {
+  const el = document.getElementById('syncIndicator');
+  if (!el) return;
+  el.classList.remove('local','syncing','synced','error','offline');
+  el.classList.add(s);
+  const labels = {
+    local:   '● 本地',
+    syncing: '● 同步中',
+    synced:  '● 已同步',
+    error:   '● 同步失敗',
+    offline: '● 離線'
+  };
+  el.textContent = labels[s] || '●';
+}
+
+function scheduleCloudSave() {
+  if (!sb || !currentUser) return;
+  if (!navigator.onLine) { setSyncStatus('offline'); return; }
+  clearTimeout(cloudSaveTimer);
+  setSyncStatus('syncing');
+  cloudSaveTimer = setTimeout(() => { saveCloud().catch(()=>{}); }, 1500);
+}
+
+async function saveCloud() {
+  if (!sb || !currentUser) { setSyncStatus('local'); return; }
+  try {
+    const { error } = await sb
+      .from('life_states')
+      .upsert(
+        { user_id: currentUser.id, state: state, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id' }
+      );
+    if (error) throw error;
+    setSyncStatus('synced');
+  } catch (e) {
+    console.warn('[cloud save]', e);
+    setSyncStatus('error');
+  }
+}
+
+async function loadCloud() {
+  if (!sb || !currentUser) return;
+  setSyncStatus('syncing');
+  try {
+    const { data, error } = await sb
+      .from('life_states')
+      .select('state, updated_at')
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+    if (error) throw error;
+
+    if (data && data.state && typeof data.state === 'object') {
+      // 雲端有資料 → 覆蓋本地（cloud wins）
+      Object.assign(state, data.state);
+      saveLocal();
+      restoreUI();
+      renderStreak();
+      updateNightProgress();
+      setSyncStatus('synced');
+      showToast('☁ 已從雲端載入最新資料');
+    } else {
+      // 這個帳號第一次用，把本地推上去
+      await saveCloud();
+      showToast('☁ 本地資料已上傳雲端');
+    }
+  } catch (e) {
+    console.warn('[cloud load]', e);
+    setSyncStatus('error');
+  }
+}
+
+// ═══════════════ AUTH UI ═══════════════
+function updateUserMenu(user) {
+  const menu = document.getElementById('userMenu');
+  if (!menu) return;
+  if (user) {
+    const email = user.email || '';
+    menu.innerHTML =
+      '<span class="user-email" title="' + email + '">' + email + '</span>' +
+      '<button class="btn-auth danger" onclick="signOut()">登出</button>';
+  } else {
+    menu.innerHTML =
+      '<button class="btn-auth primary" onclick="openLogin()">登入同步</button>';
+  }
+}
+
+function openLogin() {
+  const modal = document.getElementById('loginModal');
+  modal.classList.add('active');
+  setTimeout(() => {
+    const input = document.getElementById('loginEmail');
+    if (input) input.focus();
+  }, 120);
+}
+
+function closeLogin() {
+  const modal = document.getElementById('loginModal');
+  modal.classList.remove('active');
+  const status = document.getElementById('loginStatus');
+  status.className = 'login-status';
+  status.innerHTML = '';
+  const btn = document.getElementById('loginSubmit');
+  btn.disabled = false;
+  btn.textContent = '📡 寄送登入連結';
+}
+
+async function sendMagicLink() {
+  const email  = document.getElementById('loginEmail').value.trim();
+  const btn    = document.getElementById('loginSubmit');
+  const status = document.getElementById('loginStatus');
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    status.className = 'login-status active error';
+    status.textContent = '⚠ 請輸入有效的 email';
+    return;
+  }
+  if (!sb) {
+    status.className = 'login-status active error';
+    status.textContent = '⚠ Supabase 未載入（檢查網路或防火牆）';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '傳送中…';
+  status.className = 'login-status active';
+  status.textContent = '';
+
+  try {
+    const redirectTo = window.location.origin + window.location.pathname;
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: redirectTo }
+    });
+    if (error) throw error;
+    status.className = 'login-status active success';
+    status.innerHTML =
+      '✅ <strong>登入連結已寄送</strong><br>' +
+      '請到 <strong>' + email + '</strong> 收信並點連結（1 小時內有效）。<br>' +
+      '點完會自動跳回這個頁面並登入。';
+    btn.textContent = '已寄送';
+  } catch (e) {
+    status.className = 'login-status active error';
+    status.textContent = '⚠ ' + (e.message || '寄送失敗，稍後再試');
+    btn.disabled = false;
+    btn.textContent = '📡 寄送登入連結';
+  }
+}
+
+async function signOut() {
+  if (!sb) return;
+  if (!confirm('確定登出？本地資料保留，雲端同步會暫停。')) return;
+  try {
+    await sb.auth.signOut();
+    showToast('已登出 · 本地資料保留');
+  } catch (e) {
+    console.warn('[signout]', e);
+  }
+}
+
+// ═══════════════ AUTH LIFECYCLE ═══════════════
+async function initAuth() {
+  if (!sb) {
+    setSyncStatus('local');
+    updateUserMenu(null);
+    return;
+  }
+  // 現有 session
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && session.user) {
+      currentUser = session.user;
+      updateUserMenu(currentUser);
+      await loadCloud();
+    } else {
+      setSyncStatus('local');
+      updateUserMenu(null);
+    }
+  } catch (e) {
+    console.warn('[getSession]', e);
+    setSyncStatus('error');
+  }
+
+  // Auth 狀態監聽
+  sb.auth.onAuthStateChange((event, session) => {
+    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session && session.user) {
+      if (!currentUser || currentUser.id !== session.user.id) {
+        currentUser = session.user;
+        updateUserMenu(currentUser);
+        closeLogin();
+        loadCloud();
+      }
+      // Magic link 回跳後清掉 URL fragment
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        history.replaceState(null, '', window.location.pathname);
+      }
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      updateUserMenu(null);
+      setSyncStatus('local');
+    }
+  });
+}
+
+// ═══════════════ NETWORK EVENTS ═══════════════
+window.addEventListener('online', () => {
+  if (currentUser) {
+    setSyncStatus('syncing');
+    scheduleCloudSave();
+  }
+});
+window.addEventListener('offline', () => {
+  if (currentUser) setSyncStatus('offline');
+});
+
+// Login modal: ESC 關閉
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('loginModal');
+    if (modal && modal.classList.contains('active')) closeLogin();
+  }
+});
+// Login modal: Enter 送出
+document.getElementById('loginEmail')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); sendMagicLink(); }
+});
+
+// ─── Kick off auth (after sync DOM is ready) ───
+initAuth();
+
 </script>
 </body>
 </html>
