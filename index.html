@@ -1345,7 +1345,7 @@
 <!-- ═══════════════ 前夜清障 ═══════════════ -->
 <div class="phase-panel" id="panel-night">
   <div class="win-box" id="nightWinBox" data-area="score">
-    <div class="win-score" id="nightScore">0/5</div>
+    <div class="win-score" id="nightScore">0/7</div>
     <div class="win-label">前夜任務完成度</div>
     <div class="progress-track" style="margin-top:10px">
       <div class="progress-fill" id="nightProgress" style="width:0%"></div>
@@ -1403,6 +1403,20 @@
         <div class="check-content">
           <div class="check-title">寫明天的啟動理由</div>
           <div class="check-desc">一句話：「明天我只做一件事——把系統跑起來」</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this, 'n6')">
+        <div class="check-box"></div>
+        <div class="check-content">
+          <div class="check-title">數位日落 · 睡前 1 小時關螢幕</div>
+          <div class="check-desc">藍光壓抑褪黑激素 90 分鐘。手機放客廳，床頭只放書或紙筆</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this, 'n7')">
+        <div class="check-box"></div>
+        <div class="check-content">
+          <div class="check-title">思緒傾倒 · 睡前把盤旋的想法寫下來</div>
+          <div class="check-desc">Brain dump：擔心的事、待辦、明天想到的點子，全寫到紙上外化</div>
         </div>
       </div>
     </div>
@@ -1474,6 +1488,20 @@
           <div class="check-desc">只允許一個。保證今天至少有一個「贏的閉環」</div>
         </div>
       </div>
+      <div class="check-item" onclick="toggleCheck(this, 'm6')">
+        <div class="check-box"></div>
+        <div class="check-content">
+          <div class="check-title">晨光 20 分鐘 · 戶外或亮光照射</div>
+          <div class="check-desc">起床 30 分鐘內。校正延遲生理時鐘 = 藥物等級效果。陰天也有效，別看螢幕</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this, 'm7')">
+        <div class="check-box"></div>
+        <div class="check-content">
+          <div class="check-title">身體啟動 20-30 分鐘 · 運動/快走/拉伸</div>
+          <div class="check-desc">提升多巴胺 + 正腎上腺素，最接近藥物的非藥物介入。目的是「大腦醒來」不是健身</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1518,13 +1546,15 @@
       <div class="round-dot" id="dot1"></div>
       <div class="round-dot" id="dot2"></div>
     </div>
-    <div class="timer-display" id="timerDisplay">25:00</div>
+    <div class="timer-display" id="timerDisplay">15:00</div>
     <div class="timer-controls">
-      <button class="btn timer-dur active" data-dur="25" onclick="setTimer(25)">25 分</button>
+      <button class="btn timer-dur active" data-dur="15" onclick="setTimer(15)">15 分</button>
+      <button class="btn timer-dur" data-dur="25" onclick="setTimer(25)">25 分</button>
       <button class="btn timer-dur" data-dur="45" onclick="setTimer(45)">45 分</button>
       <button class="btn btn-primary" id="timerBtn" onclick="toggleTimer()">▶ 開始</button>
       <button class="btn btn-ghost" onclick="resetTimer()">重置</button>
     </div>
+    <div class="info-text" style="margin-top:6px; font-size:0.68rem;">ADHD 友善預設：15 分。卡住就從最小區段開始</div>
   </div>
 
   <div class="card" data-area="rules">
@@ -1949,10 +1979,11 @@ function toggleCheck(el, key) {
 
 function updateNightProgress() {
   const checks = state.nightChecks;
+  const TOTAL = 7;  // n1-n7 (包含 ADHD 身體層 n6 數位日落、n7 思緒傾倒)
   let done = 0;
-  for (let i=1;i<=5;i++) if (checks['n'+i]) done++;
-  document.getElementById('nightScore').textContent = `${done}/5`;
-  document.getElementById('nightProgress').style.width = `${done*20}%`;
+  for (let i=1;i<=TOTAL;i++) if (checks['n'+i]) done++;
+  document.getElementById('nightScore').textContent = `${done}/${TOTAL}`;
+  document.getElementById('nightProgress').style.width = `${(done/TOTAL*100).toFixed(1)}%`;
 }
 
 // ─── Night Save ───
@@ -1985,8 +2016,8 @@ function updateTomorrowPreview() {
 // ─── Timer ───
 let timerInterval = null;
 let timerRunning = false;
-let timerSeconds = 25 * 60;
-let timerTotal = 25 * 60;
+let timerSeconds = 15 * 60;
+let timerTotal = 15 * 60;
 let currentRound = 0;
 const roundsDone = [false, false, false];
 
@@ -2166,8 +2197,8 @@ function restoreUI() {
 
   // Restore checks
   const checkMap = {
-    nightChecks: ['n1','n2','n3','n4','n5'],
-    morningChecks: ['m1','m2','m3','m4','m5'],
+    nightChecks: ['n1','n2','n3','n4','n5','n6','n7'],
+    morningChecks: ['m1','m2','m3','m4','m5','m6','m7'],
     deepChecks: ['d1','d2','d3','d4'],
     afternoonChecks: ['a1','a2','a3'],
     crashChecks: ['c1','c2','c3']
