@@ -1037,6 +1037,124 @@
     .time-input { width: 110px; }
   }
 
+  /* ═══════════════ INLINE CHECK-ITEM INPUT (n5/n7) ═══════════════ */
+  .check-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-size: 0.78rem;
+    font-family: inherit;
+    line-height: 1.55;
+    outline: none;
+    resize: vertical;
+    margin-top: 8px;
+    min-height: 44px;
+    transition: all 0.2s;
+  }
+  .check-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,229,255,0.15);
+  }
+  .check-input::placeholder { color: var(--muted); font-size: 0.74rem; }
+
+  /* ═══════════════ RULES LIST (non-interactive display) ═══════════════ */
+  .rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .rule-item {
+    padding: 9px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+  }
+  .rule-item .rule-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .rule-item .rule-desc {
+    font-size: 0.71rem;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  /* ═══════════════ SESSION TROPHY (pomodoro achievement lights) ═══════════════ */
+  .session-trophy {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    min-height: 28px;
+  }
+  .session-trophy:empty::before {
+    content: '今日完成 cycle 會在這亮燈';
+    font-family: var(--f-head);
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .trophy-light {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    animation: trophyAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: default;
+    flex-shrink: 0;
+  }
+  .trophy-light.dur-15 {
+    background: radial-gradient(circle at 30% 30%, #50ffb0, var(--neon-green));
+    box-shadow: 0 0 8px rgba(0,255,136,0.7), inset 0 -2px 3px rgba(0,0,0,0.25);
+  }
+  .trophy-light.dur-25 {
+    background: radial-gradient(circle at 30% 30%, #50e5ff, var(--neon-cyan));
+    box-shadow: 0 0 9px rgba(0,229,255,0.8), inset 0 -2px 3px rgba(0,0,0,0.25);
+  }
+  .trophy-light.dur-45 {
+    background: radial-gradient(circle at 30% 30%, #c7a9ff, var(--neon-purple));
+    box-shadow: 0 0 11px rgba(167,139,250,0.9), inset 0 -2px 3px rgba(0,0,0,0.25);
+  }
+  @keyframes trophyAppear {
+    0%   { transform: scale(0) rotate(180deg); opacity: 0; }
+    60%  { transform: scale(1.4) rotate(0deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .trophy-legend {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 6px;
+    font-family: var(--f-head);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+  .trophy-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .trophy-legend .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .trophy-legend .dot.dur-15 { background: var(--neon-green); box-shadow: 0 0 4px var(--neon-green); }
+  .trophy-legend .dot.dur-25 { background: var(--neon-cyan); box-shadow: 0 0 4px var(--neon-cyan); }
+  .trophy-legend .dot.dur-45 { background: var(--neon-purple); box-shadow: 0 0 4px var(--neon-purple); }
+
   /* ═══════════════ SYNC INDICATOR (header) ═══════════════ */
   .sync-zone {
     display: inline-flex;
@@ -1368,7 +1486,7 @@
   </div>
 
   <div class="card" data-area="check">
-    <div class="card-title">02 · 前夜五件事</div>
+    <div class="card-title">02 · 前夜七件事</div>
     <div class="checklist" id="nightChecklist">
       <div class="check-item" onclick="toggleCheck(this, 'n1')">
         <div class="check-box"></div>
@@ -1401,8 +1519,9 @@
       <div class="check-item" onclick="toggleCheck(this, 'n5')">
         <div class="check-box"></div>
         <div class="check-content">
-          <div class="check-title">寫明天的啟動理由</div>
-          <div class="check-desc">一句話：「明天我只做一件事——把系統跑起來」</div>
+          <div class="check-title">寫一句「明天為什麼要做」</div>
+          <div class="check-desc">不是計劃，是動機：給明天的自己一個具體理由。例：「做完 X 我才能 Y」「不做 Z 這週就廢了」</div>
+          <textarea class="check-input" id="nightReason" placeholder="例：明天做完報告再吃早餐 / 沒交出這個就不能睡..." onclick="event.stopPropagation()"></textarea>
         </div>
       </div>
       <div class="check-item" onclick="toggleCheck(this, 'n6')">
@@ -1416,7 +1535,8 @@
         <div class="check-box"></div>
         <div class="check-content">
           <div class="check-title">思緒傾倒 · 睡前把盤旋的想法寫下來</div>
-          <div class="check-desc">Brain dump：擔心的事、待辦、明天想到的點子，全寫到紙上外化</div>
+          <div class="check-desc">Brain dump：擔心的事、待辦、明天想到的點子。全部外化到下面，大腦才能關機</div>
+          <textarea class="check-input" id="nightBrainDump" placeholder="寫下所有盤旋在腦裡的東西，不用整理..." rows="3" onclick="event.stopPropagation()"></textarea>
         </div>
       </div>
     </div>
@@ -1434,7 +1554,7 @@
       <input class="ifthen-input" id="ifthenThen" placeholder="腳落地同時把手機扔到客廳…">
     </div>
     <div class="info-text" style="margin-top:10px; padding:10px; background:rgba(255,184,0,0.06); border:1px solid rgba(255,184,0,0.25); border-radius:4px;">
-      ⚠ 提示：前夜五件事完成率低於 3/5，明天的早晨阻力會上升 3–5 倍。
+      ⚠ 提示：前夜七件事完成率低於 4/7，明天的早晨阻力會上升 3–5 倍。
     </div>
   </div>
 
@@ -1463,8 +1583,8 @@
       <div class="check-item" onclick="toggleCheck(this, 'm2')">
         <div class="check-box"></div>
         <div class="check-content">
-          <div class="check-title">接觸自然光 ＋ 喝一杯水</div>
-          <div class="check-desc">讓身體知道：白天開始了</div>
+          <div class="check-title">喝一杯水</div>
+          <div class="check-desc">睡了 7-8 小時沒喝水，大腦缺水 = 注意力差。先補水再說</div>
         </div>
       </div>
       <div class="check-item" onclick="toggleCheck(this, 'm3')">
@@ -1495,33 +1615,20 @@
           <div class="check-desc">起床 30 分鐘內。校正延遲生理時鐘 = 藥物等級效果。陰天也有效，別看螢幕</div>
         </div>
       </div>
-      <div class="check-item" onclick="toggleCheck(this, 'm7')">
-        <div class="check-box"></div>
-        <div class="check-content">
-          <div class="check-title">身體啟動 20-30 分鐘 · 運動/快走/拉伸</div>
-          <div class="check-desc">提升多巴胺 + 正腎上腺素，最接近藥物的非藥物介入。目的是「大腦醒來」不是健身</div>
-        </div>
-      </div>
     </div>
   </div>
 
   <div class="card" data-area="mit2">
-    <div class="card-title">今天的 MIT（可編輯）</div>
-    <div class="mit-label">可見交付 — 必須能「拿出來給人看」</div>
-    <textarea class="mit-input" id="todayMIT" placeholder="今天 ____：____ 到 ____：____ 我要完成：【具體產出】" rows="2"></textarea>
+    <div class="card-title">今天的 MIT · 昨晚寫的</div>
+    <div class="mit-label">中途想調整直接改這裡 · 存檔自動同步</div>
+    <textarea class="mit-input" id="todayMIT" placeholder="（昨晚還沒規劃 → 現在寫下今天的 MIT）" rows="2"></textarea>
     <div class="time-row">
       <label>開始</label>
       <input type="time" class="time-input" id="todayMitStart" value="08:00">
       <label>結束</label>
       <input type="time" class="time-input" id="todayMitEnd" value="08:30">
     </div>
-    <div class="info-text" style="margin-top:8px;">💡 昨晚前夜寫的會自動帶到這。中途想調整也可以直接改。</div>
-  </div>
-
-  <div class="card" id="tomorrowPreviewCard" data-area="tmr" style="display:none; border-color: rgba(167,139,250,0.4); background: linear-gradient(180deg, rgba(167,139,250,0.06), var(--card-2));">
-    <div class="card-title" style="color: var(--neon-purple);">🌙 明天已規劃（今晚前夜寫的）</div>
-    <div id="tomorrowPreview" style="font-size:0.92rem; color:var(--text); font-weight:600; padding: 4px 0; font-family: var(--f-mono);"></div>
-    <div class="info-text" style="margin-top:4px;">00:00 跨日後，自動變成「今天的 MIT」。</div>
+    <div id="todayReasonDisplay" class="info-text" style="margin-top:10px; padding:10px; background:rgba(0,229,255,0.05); border:1px solid rgba(0,229,255,0.2); border-radius:4px; display:none;"></div>
   </div>
 </div>
 
@@ -1555,38 +1662,32 @@
       <button class="btn btn-ghost" onclick="resetTimer()">重置</button>
     </div>
     <div class="info-text" style="margin-top:6px; font-size:0.68rem;">ADHD 友善預設：15 分。卡住就從最小區段開始</div>
+    <div class="session-trophy" id="sessionTrophy"></div>
+    <div class="trophy-legend">
+      <span><span class="dot dur-15"></span>15m</span>
+      <span><span class="dot dur-25"></span>25m</span>
+      <span><span class="dot dur-45"></span>45m</span>
+    </div>
   </div>
 
   <div class="card" data-area="rules">
-    <div class="card-title">執行四規則</div>
-    <div class="checklist">
-      <div class="check-item" onclick="toggleCheck(this,'d1')">
-        <div class="check-box"></div>
-        <div class="check-content">
-          <div class="check-title">先產出，再修飾</div>
-          <div class="check-desc">做出來是起點，做得好是終點。沒有起點就沒有終點。</div>
-        </div>
+    <div class="card-title">執行四規則 · 提示用途</div>
+    <div class="rules-list">
+      <div class="rule-item">
+        <div class="rule-title">先產出，再修飾</div>
+        <div class="rule-desc">做出來是起點，做得好是終點。沒有起點就沒有終點。</div>
       </div>
-      <div class="check-item" onclick="toggleCheck(this,'d2')">
-        <div class="check-box"></div>
-        <div class="check-content">
-          <div class="check-title">完成交付承諾</div>
-          <div class="check-desc">每輪開始前寫下這輪的成功標準，並達到它</div>
-        </div>
+      <div class="rule-item">
+        <div class="rule-title">完成交付承諾</div>
+        <div class="rule-desc">每輪開始前寫下這輪的成功標準，並達到它</div>
       </div>
-      <div class="check-item" onclick="toggleCheck(this,'d3')">
-        <div class="check-box"></div>
-        <div class="check-content">
-          <div class="check-title">卡住時降級，不換任務</div>
-          <div class="check-desc">同一條軌道上換低檔位，低檔位也是前進</div>
-        </div>
+      <div class="rule-item">
+        <div class="rule-title">卡住時降級，不換任務</div>
+        <div class="rule-desc">同一條軌道上換低檔位，低檔位也是前進</div>
       </div>
-      <div class="check-item" onclick="toggleCheck(this,'d4')">
-        <div class="check-box"></div>
-        <div class="check-content">
-          <div class="check-title">MIT 完成 → 送「我贏了」訊號</div>
-          <div class="check-desc">1 個 100% 完成 &gt; 10 個完成 3 個</div>
-        </div>
+      <div class="rule-item">
+        <div class="rule-title">MIT 完成 → 送「我贏了」訊號</div>
+        <div class="rule-desc">1 個 100% 完成 &gt; 10 個完成 3 個</div>
       </div>
     </div>
   </div>
@@ -1774,7 +1875,12 @@ let state = {
   todayMitStart: '08:00',
   todayMitEnd: '08:30',
   todayIfthenIf: '',
-  todayIfthenThen: ''
+  todayIfthenThen: '',
+  // NEW (2026-04-23 Phase 1.5)
+  nightReason: '',       // 前夜寫的啟動動機句（跨日遷到 todayReason 供早上看）
+  nightBrainDump: '',    // 前夜思緒傾倒（只歸檔到 history，不遷移）
+  todayReason: '',       // 今天早上顯示昨晚的動機句
+  todaySessions: []      // 今日完成的番茄 cycle [{duration, ts}]
 };
 
 const KEY = 'life24h_v2';
@@ -1887,15 +1993,20 @@ function checkDayRollover() {
     ifthenIf: state.todayIfthenIf,
     ifthenThen: state.todayIfthenThen,
     commitInput: state.commitInput,
+    // NEW: archive reason/brainDump/sessions
+    reason: state.todayReason || '',
+    brainDump: state.nightBrainDump || '',
+    sessions: [...(state.todaySessions || [])],
     win: state.streak[yesterday] || 'none'
   };
 
-  // 今天的 MIT = 昨晚在前夜寫的 nightMIT
+  // 今天的 MIT = 昨晚在前夜寫的 nightMIT；今天的 Reason = 昨晚寫的 nightReason
   state.todayMIT = state.nightMIT || '';
   state.todayMitStart = state.mitStart || '08:00';
   state.todayMitEnd = state.mitEnd || '08:30';
   state.todayIfthenIf = state.ifthenIf || '';
   state.todayIfthenThen = state.ifthenThen || '';
+  state.todayReason = state.nightReason || '';
 
   // 清空前夜欄位（等今晚重新規劃明天）
   state.nightMIT = '';
@@ -1903,6 +2014,8 @@ function checkDayRollover() {
   state.mitEnd = '08:30';
   state.ifthenIf = '';
   state.ifthenThen = '';
+  state.nightReason = '';
+  state.nightBrainDump = '';
 
   // 清空當日執行欄位
   state.nightChecks = {};
@@ -1916,12 +2029,13 @@ function checkDayRollover() {
   state.tomorrowAnchor = '';
   state.db1 = ''; state.db2 = ''; state.db3 = ''; state.db4 = ''; state.db5 = '';
   state.todayWin = null;
+  state.todaySessions = [];
   state.currentDay = today;
   save();
 
   let nightPrep = 0;
   const archived = state.history[yesterday];
-  for (let i = 1; i <= 5; i++) if (archived.nightChecks && archived.nightChecks['n'+i]) nightPrep++;
+  for (let i = 1; i <= 7; i++) if (archived.nightChecks && archived.nightChecks['n'+i]) nightPrep++;
   return { yesterday, win: archived.win, nightPrep };
 }
 
@@ -1933,13 +2047,30 @@ restoreUI();
 if (_rollover) {
   setTimeout(() => {
     const emoji = _rollover.win === 'win' ? '🏆' : _rollover.win === 'partial' ? '⚡' : '–';
-    showToast(`🌅 新的一天：${_rollover.yesterday} 已歸檔 ${emoji} (前夜 ${_rollover.nightPrep}/5)`);
+    showToast(`🌅 新的一天：${_rollover.yesterday} 已歸檔 ${emoji} (前夜 ${_rollover.nightPrep}/7)`);
   }, 500);
 }
 updateDateBadge();
 renderStreak();
 updateNightProgress();
 detectPhase();
+
+// ─── Auto day-rollover (for tabs left open across midnight) ───
+function autoRolloverCheck() {
+  const result = checkDayRollover();
+  if (!result) return;
+  // Day changed — state cleared, re-render everything
+  restoreUI();
+  renderStreak();
+  updateNightProgress();
+  updateDateBadge();
+  const emoji = result.win === 'win' ? '🏆' : result.win === 'partial' ? '⚡' : '–';
+  showToast(`🌅 跨日：${result.yesterday} 已歸檔 ${emoji} (前夜 ${result.nightPrep}/7)`);
+}
+setInterval(autoRolloverCheck, 60 * 1000);  // every minute
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) autoRolloverCheck();
+});
 
 function updateDateBadge() {
   const now = new Date();
@@ -1963,7 +2094,7 @@ function switchPhase(name) {
   document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
   document.querySelector(`[data-phase="${name}"]`).classList.add('active');
-  if (name === 'morning') updateTomorrowPreview();
+  if (name === 'morning') updateTodayReasonDisplay();
 }
 
 // ─── Checklist ───
@@ -1997,20 +2128,14 @@ function saveNight() {
   showToast('✅ 前夜設定已存檔！明天加油！');
 }
 
-// ─── Tomorrow Preview (shown in morning panel) ───
-function updateTomorrowPreview() {
-  const card = document.getElementById('tomorrowPreviewCard');
-  const preview = document.getElementById('tomorrowPreview');
-  if (!card || !preview) return;
-  const mit = (state.nightMIT || '').trim();
-  if (!mit) {
-    card.style.display = 'none';
-    return;
-  }
-  const s = state.mitStart || '08:00';
-  const e = state.mitEnd || '08:30';
-  preview.textContent = `${s} – ${e}　${mit}`;
-  card.style.display = 'block';
+// ─── Morning: show yesterday's "why" reason ───
+function updateTodayReasonDisplay() {
+  const el = document.getElementById('todayReasonDisplay');
+  if (!el) return;
+  const reason = (state.todayReason || '').trim();
+  if (!reason) { el.style.display = 'none'; return; }
+  el.innerHTML = `<strong style="color:var(--accent); text-shadow:0 0 4px rgba(0,229,255,0.3); letter-spacing:0.05em;">💡 昨晚你寫下的動機</strong><br><span style="color:var(--text); font-size:0.88rem; line-height:1.55; display:block; margin-top:4px;">${reason.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</span>`;
+  el.style.display = 'block';
 }
 
 // ─── Timer ───
@@ -2080,10 +2205,33 @@ function completeRound() {
       document.getElementById('currentRound').textContent = currentRound + 1;
     }
   }
-  showToast('🎉 這輪完成！休息 5 分鐘，你很棒！');
+  // NEW: push trophy light for this cycle
+  const durationMin = Math.round(timerTotal / 60);
+  state.todaySessions = state.todaySessions || [];
+  state.todaySessions.push({
+    duration: durationMin,
+    ts: new Date().toISOString()
+  });
+  save();
+  renderSessionTrophy();
+
+  const totalToday = state.todaySessions.length;
+  showToast(`🎉 這輪完成！今天第 ${totalToday} 盞燈 · 休息 5 分鐘！`);
   timerSeconds = timerTotal;
   document.getElementById('timerBtn').textContent = '▶ 開始';
   renderTimer();
+}
+
+function renderSessionTrophy() {
+  const el = document.getElementById('sessionTrophy');
+  if (!el) return;
+  const sessions = state.todaySessions || [];
+  el.innerHTML = sessions.map(s => {
+    const d = s.duration;
+    const tsShort = (s.ts || '').slice(11, 16); // HH:MM
+    const clsKey = (d === 15 || d === 25 || d === 45) ? d : (d < 20 ? 15 : (d < 35 ? 25 : 45));
+    return `<div class="trophy-light dur-${clsKey}" title="${d} 分 @ ${tsShort}"></div>`;
+  }).join('');
 }
 
 // ─── Debrief ───
@@ -2194,12 +2342,17 @@ function restoreUI() {
   safeSet('tomorrowAnchor', s.tomorrowAnchor);
   safeSet('db1',s.db1); safeSet('db2',s.db2); safeSet('db3',s.db3);
   safeSet('db4',s.db4); safeSet('db5',s.db5);
+  // NEW
+  safeSet('nightReason', s.nightReason);
+  safeSet('nightBrainDump', s.nightBrainDump);
 
-  // Restore checks
+  // Reset all check-item 'done' states first (important when re-rendering after rollover)
+  document.querySelectorAll('.check-item.done').forEach(el => el.classList.remove('done'));
+
+  // Restore checks (deepChecks removed — 執行四規則 is display-only now, m7 removed)
   const checkMap = {
     nightChecks: ['n1','n2','n3','n4','n5','n6','n7'],
-    morningChecks: ['m1','m2','m3','m4','m5','m6','m7'],
-    deepChecks: ['d1','d2','d3','d4'],
+    morningChecks: ['m1','m2','m3','m4','m5','m6'],
     afternoonChecks: ['a1','a2','a3'],
     crashChecks: ['c1','c2','c3']
   };
@@ -2223,6 +2376,10 @@ function restoreUI() {
     const el = document.getElementById('winMsg');
     if (el) { el.textContent = msg; el.style.color = s.todayWin ? 'var(--win)' : 'var(--warn)'; }
   }
+
+  // NEW: render trophy + today's reason display
+  renderSessionTrophy();
+  updateTodayReasonDisplay();
 }
 
 function safeSet(id, val) {
@@ -2233,7 +2390,8 @@ function safeSet(id, val) {
 // ─── Auto-save inputs ───
 ['nightMIT','mitStart','mitEnd','ifthenIf','ifthenThen','commitInput',
  'reset1','reset2','pmStart','tomorrowAnchor','db1','db2','db3','db4','db5',
- 'todayMIT','todayMitStart','todayMitEnd'
+ 'todayMIT','todayMitStart','todayMitEnd',
+ 'nightReason','nightBrainDump'
 ].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
