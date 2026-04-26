@@ -1023,6 +1023,9 @@
     .header > .date-badge  { grid-area: date; justify-self: end; }
     .header > .streak-strip{ grid-area: strip; }
     .streak-strip-label    { display: none; }
+    .streak-strip          { grid-template-columns: 1fr auto; gap: 10px; }
+    .streak-strip-grid .streak-day { max-height: 26px; }
+    .streak-counter        { font-size: 0.88rem; padding: 4px 10px; }
     .phase-nav { grid-template-columns: repeat(3, 1fr); }
     .phase-btn { font-size: 0.72rem; padding: 9px 6px; }
     .phase-panel.active { grid-template-columns: 1fr; }
@@ -1035,6 +1038,29 @@
     .header h1 small { display: none; }
     .phase-nav { grid-template-columns: repeat(3, 1fr); }
     .time-input { width: 110px; }
+    /* 手機：counter 換行到下方，30 格獨佔一行不被擠 */
+    .streak-strip {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .streak-strip-grid {
+      order: 1;
+      gap: 2px;
+    }
+    .streak-strip-grid .streak-day {
+      max-height: 18px;
+      font-size: 0;          /* 手機隱藏日期數字，純顏色燈號更乾淨 */
+      border-radius: 2px;
+    }
+    .streak-counter {
+      order: 2;
+      justify-self: start;
+      font-size: 0.78rem;
+      padding: 3px 9px;
+    }
+    .streak-counter::after {
+      font-size: 0.55rem;
+    }
   }
 
   /* ═══════════════ INLINE CHECK-ITEM INPUT (n5/n7) ═══════════════ */
@@ -1414,22 +1440,51 @@
   <div class="login-card">
     <button class="login-close" onclick="closeLogin()" aria-label="關閉">✕</button>
     <div class="login-title" id="loginTitle">Neural Access</div>
-    <div class="login-subtitle">
-      輸入 email，系統會寄一封登入連結給你。點開連結就完成登入，之後資料會在所有裝置間自動同步。
+
+    <!-- Step 1: Email -->
+    <div id="loginStepEmail">
+      <div class="login-subtitle">
+        輸入 email，系統會寄一組 <strong>6 碼驗證碼</strong>給你。<br>
+        在這個畫面輸入驗證碼即可登入，跨裝置都能用。
+      </div>
+      <input
+        type="email"
+        class="login-input"
+        id="loginEmail"
+        placeholder="your@email.com"
+        autocomplete="email"
+        spellcheck="false"
+      >
+      <button class="login-btn" id="loginSubmit" onclick="sendOtp()">📡 寄送驗證碼</button>
     </div>
-    <input
-      type="email"
-      class="login-input"
-      id="loginEmail"
-      placeholder="your@email.com"
-      autocomplete="email"
-      spellcheck="false"
-    >
-    <button class="login-btn" id="loginSubmit" onclick="sendMagicLink()">📡 寄送登入連結</button>
+
+    <!-- Step 2: OTP -->
+    <div id="loginStepOtp" style="display:none;">
+      <div class="login-subtitle">
+        驗證碼已寄到 <strong id="otpEmailDisplay"></strong><br>
+        請輸入信件中的 <strong>6 碼數字</strong>（10 分鐘內有效）。
+      </div>
+      <input
+        type="text"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="6"
+        class="login-input"
+        id="loginOtp"
+        placeholder="000000"
+        autocomplete="one-time-code"
+        spellcheck="false"
+        style="letter-spacing: 0.5em; text-align: center; font-size: 1.4em;"
+      >
+      <button class="login-btn" id="otpSubmit" onclick="verifyOtpCode()">🔓 驗證並登入</button>
+      <div class="login-hint" style="margin-top:10px;">
+        <a href="#" onclick="event.preventDefault(); resetLoginToEmail();" style="color:inherit; text-decoration:underline;">← 換 email 或重寄</a>
+      </div>
+    </div>
+
     <div class="login-status" id="loginStatus"></div>
     <div class="login-hint">
-      <strong>不用密碼。</strong>每次登入都用 email 點連結，安全又免記。
-      Session 會保留 30 天，期間不用重新登入。
+      <strong>不用密碼。</strong>Session 保留 30 天，期間不用重新登入。
     </div>
   </div>
 </div>
@@ -2497,7 +2552,10 @@ function updateUserMenu(user) {
   }
 }
 
+let pendingOtpEmail = '';
+
 function openLogin() {
+  resetLoginToEmail();
   const modal = document.getElementById('loginModal');
   modal.classList.add('active');
   setTimeout(() => {
@@ -2506,18 +2564,27 @@ function openLogin() {
   }, 120);
 }
 
-function closeLogin() {
-  const modal = document.getElementById('loginModal');
-  modal.classList.remove('active');
+function resetLoginToEmail() {
+  document.getElementById('loginStepEmail').style.display = '';
+  document.getElementById('loginStepOtp').style.display = 'none';
   const status = document.getElementById('loginStatus');
   status.className = 'login-status';
   status.innerHTML = '';
   const btn = document.getElementById('loginSubmit');
-  btn.disabled = false;
-  btn.textContent = '📡 寄送登入連結';
+  if (btn) { btn.disabled = false; btn.textContent = '📡 寄送驗證碼'; }
+  const otpBtn = document.getElementById('otpSubmit');
+  if (otpBtn) { otpBtn.disabled = false; otpBtn.textContent = '🔓 驗證並登入'; }
+  const otpInput = document.getElementById('loginOtp');
+  if (otpInput) otpInput.value = '';
 }
 
-async function sendMagicLink() {
+function closeLogin() {
+  const modal = document.getElementById('loginModal');
+  modal.classList.remove('active');
+  resetLoginToEmail();
+}
+
+async function sendOtp() {
   const email  = document.getElementById('loginEmail').value.trim();
   const btn    = document.getElementById('loginSubmit');
   const status = document.getElementById('loginStatus');
@@ -2539,23 +2606,62 @@ async function sendMagicLink() {
   status.textContent = '';
 
   try {
-    const redirectTo = window.location.origin + window.location.pathname;
     const { error } = await sb.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: redirectTo }
+      options: { shouldCreateUser: true }
     });
     if (error) throw error;
+    pendingOtpEmail = email;
+    document.getElementById('otpEmailDisplay').textContent = email;
+    document.getElementById('loginStepEmail').style.display = 'none';
+    document.getElementById('loginStepOtp').style.display = '';
     status.className = 'login-status active success';
-    status.innerHTML =
-      '✅ <strong>登入連結已寄送</strong><br>' +
-      '請到 <strong>' + email + '</strong> 收信並點連結（1 小時內有效）。<br>' +
-      '點完會自動跳回這個頁面並登入。';
-    btn.textContent = '已寄送';
+    status.innerHTML = '✅ 驗證碼已寄出，請到信箱找 6 碼數字';
+    setTimeout(() => {
+      const otpInput = document.getElementById('loginOtp');
+      if (otpInput) otpInput.focus();
+    }, 100);
   } catch (e) {
     status.className = 'login-status active error';
     status.textContent = '⚠ ' + (e.message || '寄送失敗，稍後再試');
     btn.disabled = false;
-    btn.textContent = '📡 寄送登入連結';
+    btn.textContent = '📡 寄送驗證碼';
+  }
+}
+
+async function verifyOtpCode() {
+  const token  = document.getElementById('loginOtp').value.trim();
+  const btn    = document.getElementById('otpSubmit');
+  const status = document.getElementById('loginStatus');
+
+  if (!/^\d{6}$/.test(token)) {
+    status.className = 'login-status active error';
+    status.textContent = '⚠ 請輸入 6 碼數字';
+    return;
+  }
+  if (!sb || !pendingOtpEmail) {
+    status.className = 'login-status active error';
+    status.textContent = '⚠ 請先寄送驗證碼';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '驗證中…';
+  status.className = 'login-status active';
+  status.textContent = '';
+
+  try {
+    const { error } = await sb.auth.verifyOtp({
+      email: pendingOtpEmail,
+      token,
+      type: 'email'
+    });
+    if (error) throw error;
+  } catch (e) {
+    status.className = 'login-status active error';
+    status.textContent = '⚠ ' + (e.message || '驗證失敗，請確認 6 碼正確或重寄');
+    btn.disabled = false;
+    btn.textContent = '🔓 驗證並登入';
   }
 }
 
@@ -2634,7 +2740,10 @@ document.addEventListener('keydown', (e) => {
 });
 // Login modal: Enter 送出
 document.getElementById('loginEmail')?.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') { e.preventDefault(); sendMagicLink(); }
+  if (e.key === 'Enter') { e.preventDefault(); sendOtp(); }
+});
+document.getElementById('loginOtp')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); verifyOtpCode(); }
 });
 
 // ─── Kick off auth (after sync DOM is ready) ───
