@@ -1444,8 +1444,8 @@
     <!-- Step 1: Email -->
     <div id="loginStepEmail">
       <div class="login-subtitle">
-        輸入 email，系統會寄一組 <strong>6 碼驗證碼</strong>給你。<br>
-        在這個畫面輸入驗證碼即可登入，跨裝置都能用。
+        輸入 email，系統會寄一組<strong>驗證碼</strong>給你。<br>
+        在這個畫面輸入即可登入，跨裝置都能用。
       </div>
       <input
         type="email"
@@ -1462,19 +1462,19 @@
     <div id="loginStepOtp" style="display:none;">
       <div class="login-subtitle">
         驗證碼已寄到 <strong id="otpEmailDisplay"></strong><br>
-        請輸入信件中的 <strong>6 碼數字</strong>（10 分鐘內有效）。
+        輸入信件中的<strong>數字驗證碼</strong>（6-10 碼皆可，10 分鐘內有效）。
       </div>
       <input
         type="text"
         inputmode="numeric"
         pattern="[0-9]*"
-        maxlength="6"
+        maxlength="10"
         class="login-input"
         id="loginOtp"
-        placeholder="000000"
+        placeholder="輸入驗證碼"
         autocomplete="one-time-code"
         spellcheck="false"
-        style="letter-spacing: 0.5em; text-align: center; font-size: 1.4em;"
+        style="letter-spacing: 0.35em; text-align: center; font-size: 1.3em;"
       >
       <button class="login-btn" id="otpSubmit" onclick="verifyOtpCode()">🔓 驗證並登入</button>
       <div class="login-hint" style="margin-top:10px;">
@@ -2616,7 +2616,7 @@ async function sendOtp() {
     document.getElementById('loginStepEmail').style.display = 'none';
     document.getElementById('loginStepOtp').style.display = '';
     status.className = 'login-status active success';
-    status.innerHTML = '✅ 驗證碼已寄出，請到信箱找 6 碼數字';
+    status.innerHTML = '✅ 驗證碼已寄出，請到信箱找數字驗證碼';
     setTimeout(() => {
       const otpInput = document.getElementById('loginOtp');
       if (otpInput) otpInput.focus();
@@ -2634,9 +2634,10 @@ async function verifyOtpCode() {
   const btn    = document.getElementById('otpSubmit');
   const status = document.getElementById('loginStatus');
 
-  if (!/^\d{6}$/.test(token)) {
+  // Accept 6-10 digit OTP (Supabase 預設 6 碼，部分專案設 8 碼，最長 10)
+  if (!/^\d{6,10}$/.test(token)) {
     status.className = 'login-status active error';
-    status.textContent = '⚠ 請輸入 6 碼數字';
+    status.textContent = '⚠ 請輸入信件中的純數字驗證碼（6-10 碼）';
     return;
   }
   if (!sb || !pendingOtpEmail) {
@@ -2659,7 +2660,7 @@ async function verifyOtpCode() {
     if (error) throw error;
   } catch (e) {
     status.className = 'login-status active error';
-    status.textContent = '⚠ ' + (e.message || '驗證失敗，請確認 6 碼正確或重寄');
+    status.textContent = '⚠ ' + (e.message || '驗證失敗，請確認驗證碼正確或重寄');
     btn.disabled = false;
     btn.textContent = '🔓 驗證並登入';
   }
