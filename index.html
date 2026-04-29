@@ -805,16 +805,25 @@
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 7px 10px;
+    padding: 7px 8px 7px 10px;
     color: var(--accent);
     font-size: 0.88rem;
     font-family: var(--f-mono);
     outline: none;
-    width: 118px;
+    min-width: 130px;
     font-variant-numeric: tabular-nums;
     color-scheme: dark;
     letter-spacing: 0.04em;
   }
+  /* 修：分鐘被 picker icon 擋掉的問題 — 把 icon 縮小+留空間 */
+  .time-input::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+    cursor: pointer;
+    margin-left: 4px;
+    padding: 2px;
+    filter: invert(0.7);
+  }
+  .time-input:hover::-webkit-calendar-picker-indicator { opacity: 1; }
   .time-input:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(0,229,255,0.15);
@@ -1353,7 +1362,7 @@
     .header h1 { font-size: 1rem; letter-spacing: 0.12em; }
     .header h1 small { display: none; }
     .phase-nav { grid-template-columns: repeat(2, 1fr); }
-    .time-input { width: 110px; }
+    .time-input { min-width: 120px; padding: 7px 6px 7px 8px; }
     /* 手機：counter 換行到下方，30 格獨佔一行不被擠 */
     .streak-strip {
       grid-template-columns: 1fr;
