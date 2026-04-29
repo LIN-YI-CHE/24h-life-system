@@ -6,81 +6,145 @@
 <title>24小時人生系統 // HUD</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    /* ── Gaming HUD Palette ── */
-    --bg:            #05070F;
-    --bg-2:          #0A0E1F;
-    --card:          #0D1226;
-    --card-2:        #151A30;
-    --border:        #1E2542;
-    --border-bright: #2A3358;
-    --neon-cyan:     #00E5FF;
-    --neon-green:    #00FF88;
-    --neon-pink:     #FF2E6C;
-    --neon-amber:    #FFB800;
-    --neon-red:      #FF3555;
-    --neon-purple:   #A78BFA;
-    --text:          #E8ECF5;
-    --text-dim:      #A8B2CC;
-    --muted:         #6A758F;
+    /* ── Claude 橘黑配色 ── */
+    --bg:            #14110D;   /* 暖黑底 */
+    --bg-2:          #1B1814;   /* 略亮底 */
+    --card:          #211D17;   /* 卡片 */
+    --card-2:        #2A251E;   /* 卡片 hover/elevated */
+    --border:        #3A3328;   /* 邊界 */
+    --border-bright: #50432F;   /* 強調邊界 */
 
-    /* ── Semantic ── */
-    --accent:  var(--neon-cyan);
-    --accent2: var(--neon-green);
-    --accent3: var(--neon-amber);
-    --win:     var(--neon-green);
-    --warn:    var(--neon-amber);
-    --danger:  var(--neon-red);
+    /* 主色：Claude 暖橘 */
+    --orange:        #D97757;   /* 主橘 */
+    --orange-deep:   #B85B3D;   /* 深橘 */
+    --orange-light:  #E89370;   /* 亮橘 */
+    --cream:         #F5EDE0;   /* 暖白 */
+    --gold:          #E8B86B;   /* 暖金（次要強調） */
+    --sage:          #8FA68E;   /* 鼠尾草綠（成功 / 柔和正向） */
+    --rust:          #C25E3D;   /* 鏽紅（警告） */
+    --crimson:       #B23030;   /* 危險 */
+
+    --text:          #F2EADD;   /* 主文字（暖白） */
+    --text-dim:      #BFB4A1;   /* 次要文字 */
+    --muted:         #8A7E6B;   /* 弱文字 */
+
+    /* ── Semantic（語意對應）── */
+    --accent:  var(--orange);
+    --accent2: var(--sage);
+    --accent3: var(--gold);
+    --win:     var(--sage);
+    --warn:    var(--gold);
+    --danger:  var(--crimson);
+
+    /* 保留舊變數別名（向後相容，避免破壞既有 inline rgba） */
+    --neon-cyan:   var(--orange);
+    --neon-green:  var(--sage);
+    --neon-amber:  var(--gold);
+    --neon-red:    var(--crimson);
+    --neon-pink:   var(--orange-deep);
+    --neon-purple: var(--orange-light);
 
     /* ── Fonts ── */
-    --f-display: 'Orbitron', 'Rajdhani', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-    --f-head:    'Rajdhani', 'Inter', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    --f-display: 'Cormorant Garamond', 'Noto Serif TC', 'Songti TC', serif;
+    --f-head:    'Manrope', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
     --f-mono:    'JetBrains Mono', 'Consolas', monospace;
-    --f-body:    'Inter', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    --f-body:    'Manrope', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+
+    /* ── 基礎尺度 ── */
+    --base-size: 16px;
   }
+  html { font-size: var(--base-size); }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   html, body { height: 100%; }
 
+  /* ─── 字體質感升級（2026-04-29 Claude 風） ─── */
+  /* serif 標題用 Cormorant Garamond + Noto Serif TC */
+  /* sans body 用 Manrope + Noto Sans TC */
+  /* 全域字體放大 + 行高放鬆 */
+  body, input, textarea, button, select {
+    font-family: var(--f-body);
+    font-feature-settings: 'kern' 1, 'liga' 1;
+  }
+  h1, .card-title, .header h1, .login-title {
+    font-family: var(--f-head);
+    letter-spacing: 0.04em;
+  }
+  .mit-bar-text, .mit-input, .check-input, .ifthen-input,
+  .debrief-input, .commitment-input, .todo-item-text,
+  .todo-add-input, .info-text, .check-title, .check-desc {
+    font-family: var(--f-body);
+  }
+  /* 主要文字尺寸放大 */
+  .card-title         { font-size: 0.92rem; letter-spacing: 0.1em; text-transform: none; font-weight: 700; }
+  .info-text          { font-size: 0.88rem; line-height: 1.65; }
+  .check-title        { font-size: 1rem; font-weight: 600; line-height: 1.5; }
+  .check-desc         { font-size: 0.82rem; line-height: 1.55; }
+  .mit-input          { font-size: 1rem; line-height: 1.6; }
+  .check-input        { font-size: 0.92rem; }
+  .debrief-input      { font-size: 0.95rem; line-height: 1.6; }
+  .debrief-label      { font-size: 0.86rem; font-weight: 600; }
+  .commitment-input   { font-size: 0.95rem; line-height: 1.6; }
+  .todo-item-text     { font-size: 0.95rem; line-height: 1.55; }
+  .todo-add-input     { font-size: 0.92rem; }
+  .mit-bar-text       { font-size: 1rem; font-weight: 500; }
+  .mit-bar-label      { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; }
+  .timer-display      { font-family: var(--f-mono); font-weight: 700; }
+  .header h1          { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.06em; }
+  .phase-btn          { font-size: 0.9rem; letter-spacing: 0.05em; text-transform: none; font-weight: 600; }
+  .btn                { font-size: 0.9rem; font-weight: 600; }
+  .btn-save           { font-size: 1rem; font-weight: 700; }
+  .marquee            { font-size: 0.86rem; }
+  .win-label          { font-size: 0.84rem; font-weight: 600; letter-spacing: 0.1em; }
+  .win-score          { font-family: var(--f-display); }
+
+  /* serif 用在 win-score, login-title — 質感點 */
+  .win-score, .login-title {
+    font-family: var(--f-display);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
   body {
     background:
-      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,229,255,0.08), transparent 60%),
-      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(167,139,250,0.06), transparent 60%),
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(217,119,87,0.10), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(232,184,107,0.05), transparent 60%),
       var(--bg);
     color: var(--text);
     font-family: var(--f-body);
+    font-size: 1rem;
+    line-height: 1.55;
     min-height: 100vh;
     padding: 10px 14px 14px;
     position: relative;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Grid backdrop */
+  /* 紙質紋理背景（取代 grid，更有質感） */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(0,229,255,0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,255,0.035) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 40%, transparent 100%);
+      radial-gradient(circle at 20% 30%, rgba(217,119,87,0.025) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(232,184,107,0.02) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
   }
-  /* Scanlines */
+  /* 微紙質肌理（取代 scanlines） */
   body::after {
     content: '';
     position: fixed;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg, transparent 0, transparent 2px,
-      rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 3px
-    );
+    background-image:
+      repeating-linear-gradient(135deg, transparent 0 2px, rgba(245,237,224,0.008) 2px 3px);
     pointer-events: none;
     z-index: 1;
   }
@@ -95,12 +159,12 @@
     margin-bottom: 0;
     padding: 10px 18px;
     background:
-      linear-gradient(90deg, rgba(0,229,255,0.12), rgba(0,229,255,0.02) 45%, transparent 90%),
+      linear-gradient(90deg, rgba(217,119,87,0.12), rgba(217,119,87,0.02) 45%, transparent 90%),
       var(--card);
     border: 1px solid var(--border);
     border-left: 3px solid var(--accent);
     border-radius: 0 6px 6px 0;
-    box-shadow: inset 0 0 0 1px rgba(0,229,255,0.05), 0 0 20px rgba(0,229,255,0.04);
+    box-shadow: inset 0 0 0 1px rgba(217,119,87,0.05), 0 0 20px rgba(217,119,87,0.04);
     min-height: 66px;
   }
   .header h1 {
@@ -117,12 +181,12 @@
   .header h1 .mark {
     color: var(--accent);
     font-size: 1.35rem;
-    text-shadow: 0 0 12px rgba(0,229,255,0.7);
-    filter: drop-shadow(0 0 4px rgba(0,229,255,0.5));
+    text-shadow: 0 0 12px rgba(217,119,87,0.7);
+    filter: drop-shadow(0 0 4px rgba(217,119,87,0.5));
   }
   .header h1 span {
     color: var(--accent);
-    text-shadow: 0 0 8px rgba(0,229,255,0.4);
+    text-shadow: 0 0 8px rgba(217,119,87,0.4);
   }
   .header h1 small {
     color: var(--muted);
@@ -149,7 +213,7 @@
     animation: statusPulse 2s ease-in-out infinite;
   }
   @keyframes statusPulse {
-    0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(0,255,136,0.8); }
+    0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(143,166,142,0.8); }
     50% { opacity: 0.4; text-shadow: none; }
   }
 
@@ -177,7 +241,7 @@
     content: '▣';
     color: var(--accent);
     font-size: 0.85rem;
-    text-shadow: 0 0 6px rgba(0,229,255,0.5);
+    text-shadow: 0 0 6px rgba(217,119,87,0.5);
   }
   .streak-strip-grid {
     display: grid;
@@ -197,14 +261,14 @@
     font-weight: 800;
     color: var(--win);
     letter-spacing: 0.05em;
-    text-shadow: 0 0 10px rgba(0,255,136,0.55);
+    text-shadow: 0 0 10px rgba(143,166,142,0.55);
     white-space: nowrap;
     display: inline-flex;
     align-items: baseline;
     gap: 6px;
     padding: 5px 11px;
-    background: rgba(0,255,136,0.06);
-    border: 1px solid rgba(0,255,136,0.3);
+    background: rgba(143,166,142,0.06);
+    border: 1px solid rgba(143,166,142,0.3);
     border-radius: 4px;
     font-variant-numeric: tabular-nums;
   }
@@ -224,15 +288,15 @@
     gap: 12px;
     margin: 10px 0;
     padding: 10px 14px;
-    background: linear-gradient(90deg, rgba(0,229,255,0.08), rgba(0,229,255,0.02));
+    background: linear-gradient(90deg, rgba(217,119,87,0.08), rgba(217,119,87,0.02));
     border: 1px solid var(--border-bright);
     border-left: 3px solid var(--accent);
     border-radius: 4px;
     transition: all 0.3s;
   }
   .mit-bar.done {
-    background: linear-gradient(90deg, rgba(0,255,136,0.1), rgba(0,255,136,0.02));
-    border-color: rgba(0,255,136,0.4);
+    background: linear-gradient(90deg, rgba(143,166,142,0.1), rgba(143,166,142,0.02));
+    border-color: rgba(143,166,142,0.4);
     border-left-color: var(--win);
   }
   .mit-bar-check {
@@ -249,11 +313,11 @@
     transition: all 0.2s;
     padding: 0;
   }
-  .mit-bar-check:hover { box-shadow: 0 0 8px rgba(0,229,255,0.4); }
+  .mit-bar-check:hover { box-shadow: 0 0 8px rgba(217,119,87,0.4); }
   .mit-bar.done .mit-bar-check {
     background: var(--win);
     border-color: var(--win);
-    box-shadow: 0 0 10px rgba(0,255,136,0.5);
+    box-shadow: 0 0 10px rgba(143,166,142,0.5);
   }
   .mit-bar.done .mit-bar-check::after {
     content: '✓';
@@ -294,8 +358,8 @@
     flex-shrink: 0;
   }
   .mit-bar-pull {
-    background: rgba(255,184,0,0.15);
-    border: 1px solid rgba(255,184,0,0.4);
+    background: rgba(232,184,107,0.15);
+    border: 1px solid rgba(232,184,107,0.4);
     color: var(--warn);
     border-radius: 4px;
     padding: 5px 10px;
@@ -305,7 +369,7 @@
     font-family: var(--f-head);
     letter-spacing: 0.05em;
   }
-  .mit-bar-pull:hover { background: rgba(255,184,0,0.25); }
+  .mit-bar-pull:hover { background: rgba(232,184,107,0.25); }
   @media (max-width: 640px) {
     .mit-bar { gap: 8px; padding: 8px 10px; }
     .mit-bar-time { display: none; }
@@ -319,8 +383,8 @@
     display: none;
     padding: 8px 12px;
     margin-bottom: 10px;
-    background: rgba(255,184,0,0.08);
-    border: 1px solid rgba(255,184,0,0.3);
+    background: rgba(232,184,107,0.08);
+    border: 1px solid rgba(232,184,107,0.3);
     border-radius: 4px;
     font-size: 0.74rem;
     color: var(--warn);
@@ -346,8 +410,8 @@
   .todo-item:hover { border-color: var(--border-bright); }
   .todo-item.done {
     opacity: 0.55;
-    background: rgba(0,255,136,0.04);
-    border-color: rgba(0,255,136,0.25);
+    background: rgba(143,166,142,0.04);
+    border-color: rgba(143,166,142,0.25);
   }
   .todo-item.done .todo-item-text {
     text-decoration: line-through;
@@ -417,9 +481,9 @@
     font-family: inherit;
     outline: none;
   }
-  .todo-add-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,229,255,0.15); }
+  .todo-add-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(217,119,87,0.15); }
   .todo-add-btn {
-    background: rgba(0,229,255,0.12);
+    background: rgba(217,119,87,0.12);
     border: 1px solid var(--border-bright);
     border-radius: 4px;
     color: var(--accent);
@@ -431,7 +495,7 @@
     cursor: pointer;
     white-space: nowrap;
   }
-  .todo-add-btn:hover { background: rgba(0,229,255,0.2); }
+  .todo-add-btn:hover { background: rgba(217,119,87,0.2); }
 
   /* ── Floating Pomodoro ── */
   .pomo-fab {
@@ -445,24 +509,24 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: linear-gradient(135deg, rgba(255,53,85,0.95), rgba(255,53,85,0.75));
-    border: 2px solid rgba(255,53,85,0.8);
+    background: linear-gradient(135deg, rgba(178,48,48,0.95), rgba(178,48,48,0.75));
+    border: 2px solid rgba(178,48,48,0.8);
     border-radius: 999px;
     padding: 12px 20px;
     color: white;
     font-weight: 700;
-    box-shadow: 0 8px 24px rgba(255,53,85,0.35), 0 0 0 4px rgba(255,53,85,0.1);
+    box-shadow: 0 8px 24px rgba(178,48,48,0.35), 0 0 0 4px rgba(178,48,48,0.1);
     cursor: pointer;
     transition: all 0.2s;
     font-family: var(--f-mono);
   }
-  .pomo-fab-toggle:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,53,85,0.45); }
+  .pomo-fab-toggle:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(178,48,48,0.45); }
   .pomo-fab.running .pomo-fab-toggle {
     animation: pomoPulse 2s ease-in-out infinite;
   }
   @keyframes pomoPulse {
-    0%, 100% { box-shadow: 0 8px 24px rgba(255,53,85,0.35), 0 0 0 4px rgba(255,53,85,0.1); }
-    50%      { box-shadow: 0 8px 30px rgba(255,53,85,0.6), 0 0 0 8px rgba(255,53,85,0.2); }
+    0%, 100% { box-shadow: 0 8px 24px rgba(178,48,48,0.35), 0 0 0 4px rgba(178,48,48,0.1); }
+    50%      { box-shadow: 0 8px 30px rgba(178,48,48,0.6), 0 0 0 8px rgba(178,48,48,0.2); }
   }
   .pomo-fab-icon { font-size: 1.1rem; }
   .pomo-fab-time {
@@ -482,7 +546,7 @@
     border: 1px solid var(--border-bright);
     border-radius: 8px;
     padding: 16px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,229,255,0.1);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(217,119,87,0.1);
     max-height: calc(100vh - 100px);
     overflow-y: auto;
   }
@@ -538,7 +602,7 @@
     margin: 0 0 10px;
     padding: 7px 0;
     background:
-      linear-gradient(90deg, transparent, rgba(0,229,255,0.05) 15%, rgba(0,229,255,0.05) 85%, transparent),
+      linear-gradient(90deg, transparent, rgba(217,119,87,0.05) 15%, rgba(217,119,87,0.05) 85%, transparent),
       var(--card);
     border: 1px solid var(--border);
     border-top: none;
@@ -587,13 +651,13 @@
     content: '◆';
     color: var(--accent);
     font-size: 0.7rem;
-    text-shadow: 0 0 4px rgba(0,229,255,0.5);
+    text-shadow: 0 0 4px rgba(217,119,87,0.5);
   }
-  .marquee-item.warn::before   { content: '⚠'; color: var(--warn);   text-shadow: 0 0 4px rgba(255,184,0,0.5); }
-  .marquee-item.danger::before { content: '✖'; color: var(--danger); text-shadow: 0 0 4px rgba(255,53,85,0.5); }
+  .marquee-item.warn::before   { content: '⚠'; color: var(--warn);   text-shadow: 0 0 4px rgba(232,184,107,0.5); }
+  .marquee-item.danger::before { content: '✖'; color: var(--danger); text-shadow: 0 0 4px rgba(178,48,48,0.5); }
   .marquee-item strong { color: var(--text); font-weight: 700; }
-  .marquee-item strong.win    { color: var(--win);   text-shadow: 0 0 6px rgba(0,255,136,0.3); }
-  .marquee-item strong.danger { color: var(--danger); text-shadow: 0 0 6px rgba(255,53,85,0.3); }
+  .marquee-item strong.win    { color: var(--win);   text-shadow: 0 0 6px rgba(143,166,142,0.3); }
+  .marquee-item strong.danger { color: var(--danger); text-shadow: 0 0 6px rgba(178,48,48,0.3); }
 
   /* ═══════════════ PHASE NAV ═══════════════ */
   .phase-nav {
@@ -628,16 +692,16 @@
     gap: 6px;
   }
   .phase-btn:hover {
-    background: rgba(0,229,255,0.05);
+    background: rgba(217,119,87,0.05);
     color: var(--text);
     border-color: var(--border-bright);
   }
   .phase-btn.active {
-    background: linear-gradient(135deg, rgba(0,229,255,0.18), rgba(0,229,255,0.04));
+    background: linear-gradient(135deg, rgba(217,119,87,0.18), rgba(217,119,87,0.04));
     border-color: var(--accent);
     color: var(--accent);
-    box-shadow: 0 0 14px rgba(0,229,255,0.25), inset 0 0 8px rgba(0,229,255,0.1);
-    text-shadow: 0 0 6px rgba(0,229,255,0.5);
+    box-shadow: 0 0 14px rgba(217,119,87,0.25), inset 0 0 8px rgba(217,119,87,0.1);
+    text-shadow: 0 0 6px rgba(217,119,87,0.5);
   }
   .phase-btn .emoji { font-size: 1rem; filter: drop-shadow(0 0 4px currentColor); }
 
@@ -763,7 +827,7 @@
     font-weight: 600;
     margin-bottom: 6px;
     letter-spacing: 0.08em;
-    text-shadow: 0 0 6px rgba(0,255,136,0.3);
+    text-shadow: 0 0 6px rgba(143,166,142,0.3);
   }
   .mit-input {
     width: 100%;
@@ -782,7 +846,7 @@
   }
   .mit-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,255,0.15), 0 0 10px rgba(0,229,255,0.2);
+    box-shadow: 0 0 0 3px rgba(217,119,87,0.15), 0 0 10px rgba(217,119,87,0.2);
   }
   .mit-input::placeholder { color: var(--muted); font-size: 0.8rem; }
 
@@ -826,7 +890,7 @@
   .time-input:hover::-webkit-calendar-picker-indicator { opacity: 1; }
   .time-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,255,0.15);
+    box-shadow: 0 0 0 3px rgba(217,119,87,0.15);
   }
 
   /* ═══════════════ CHECKLIST ═══════════════ */
@@ -852,12 +916,12 @@
   .check-item:hover {
     border-color: var(--border-bright);
     border-left-color: var(--accent);
-    background: rgba(0,229,255,0.03);
+    background: rgba(217,119,87,0.03);
   }
   .check-item.done {
-    border-color: rgba(0,255,136,0.25);
+    border-color: rgba(143,166,142,0.25);
     border-left-color: var(--neon-green);
-    background: rgba(0,255,136,0.04);
+    background: rgba(143,166,142,0.04);
   }
   .check-box {
     width: 16px;
@@ -875,7 +939,7 @@
   .check-item.done .check-box {
     background: var(--neon-green);
     border-color: var(--neon-green);
-    box-shadow: 0 0 8px rgba(0,255,136,0.6);
+    box-shadow: 0 0 8px rgba(143,166,142,0.6);
   }
   .check-item.done .check-box::after {
     content: '';
@@ -902,50 +966,56 @@
     color: var(--muted);
   }
 
-  /* ═══════════════ IF-THEN ═══════════════ */
+  /* ═══════════════ IF-THEN（緊湊版）═══════════════ */
   .ifthen-row {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    margin-top: 6px;
   }
+  .ifthen-row:first-of-type { margin-top: 0; }
   .ifthen-tag {
-    background: linear-gradient(135deg, rgba(0,229,255,0.2), rgba(0,229,255,0.05));
-    color: var(--accent);
-    border: 1px solid rgba(0,229,255,0.35);
+    background: rgba(217,119,87,0.12);
+    color: var(--orange);
+    border: 1px solid rgba(217,119,87,0.3);
     border-radius: 3px;
-    padding: 5px 10px;
+    padding: 3px 8px;
     font-family: var(--f-head);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    letter-spacing: 0.08em;
     white-space: nowrap;
-    text-shadow: 0 0 6px rgba(0,229,255,0.4);
+    flex-shrink: 0;
+  }
+  .ifthen-tag.tag-then {
+    background: rgba(143,166,142,0.12);
+    color: var(--sage);
+    border-color: rgba(143,166,142,0.3);
   }
   .ifthen-input {
     flex: 1;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 11px;
+    border-radius: 3px;
+    padding: 6px 9px;
     color: var(--text);
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     font-family: inherit;
     outline: none;
-    min-width: 140px;
+    min-width: 0;
   }
   .ifthen-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,255,0.15);
+    border-color: var(--orange);
+    box-shadow: 0 0 0 2px rgba(217,119,87,0.15);
   }
 
   /* ═══════════════ WIN SCORE (HUD METER) ═══════════════ */
   .win-box {
     background:
-      linear-gradient(135deg, rgba(0,255,136,0.08), rgba(0,229,255,0.05)),
+      linear-gradient(135deg, rgba(143,166,142,0.08), rgba(217,119,87,0.05)),
       var(--card);
-    border: 1px solid rgba(0,255,136,0.35);
+    border: 1px solid rgba(143,166,142,0.35);
     border-radius: 6px;
     padding: 16px 14px;
     text-align: center;
@@ -957,7 +1027,7 @@
     position: absolute;
     top: 0; left: 0; right: 0; height: 2px;
     background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
-    box-shadow: 0 0 12px rgba(0,255,136,0.7);
+    box-shadow: 0 0 12px rgba(143,166,142,0.7);
   }
   .win-box::after {
     content: '';
@@ -976,7 +1046,7 @@
     color: var(--win);
     line-height: 1;
     letter-spacing: 0.04em;
-    text-shadow: 0 0 18px rgba(0,255,136,0.55);
+    text-shadow: 0 0 18px rgba(143,166,142,0.55);
     font-variant-numeric: tabular-nums;
   }
   .win-label {
@@ -1001,7 +1071,7 @@
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
-    box-shadow: 0 0 10px rgba(0,229,255,0.6);
+    box-shadow: 0 0 10px rgba(217,119,87,0.6);
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
   }
@@ -1025,7 +1095,7 @@
     letter-spacing: 0.1em;
     margin: 8px 0;
     font-variant-numeric: tabular-nums;
-    text-shadow: 0 0 22px rgba(0,229,255,0.55), 0 0 40px rgba(0,229,255,0.25);
+    text-shadow: 0 0 22px rgba(217,119,87,0.55), 0 0 40px rgba(217,119,87,0.25);
     line-height: 1;
   }
   .timer-controls {
@@ -1052,42 +1122,42 @@
   .btn:hover {
     border-color: var(--accent);
     color: var(--accent);
-    box-shadow: 0 0 12px rgba(0,229,255,0.22);
+    box-shadow: 0 0 12px rgba(217,119,87,0.22);
   }
   .btn.timer-dur.active {
-    background: linear-gradient(135deg, rgba(0,229,255,0.25), rgba(0,229,255,0.1));
+    background: linear-gradient(135deg, rgba(217,119,87,0.25), rgba(217,119,87,0.1));
     color: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 12px rgba(0,229,255,0.3);
-    text-shadow: 0 0 6px rgba(0,229,255,0.5);
+    box-shadow: 0 0 12px rgba(217,119,87,0.3);
+    text-shadow: 0 0 6px rgba(217,119,87,0.5);
   }
   .btn-primary {
     background: linear-gradient(135deg, var(--accent), #0099D8);
     color: #000;
     border-color: var(--accent);
-    box-shadow: 0 0 14px rgba(0,229,255,0.45);
+    box-shadow: 0 0 14px rgba(217,119,87,0.45);
   }
   .btn-primary:hover {
     color: #000;
-    box-shadow: 0 0 22px rgba(0,229,255,0.7);
+    box-shadow: 0 0 22px rgba(217,119,87,0.7);
   }
   .btn-ghost {
     background: var(--bg);
     color: var(--text-dim);
   }
   .btn-warn {
-    background: rgba(255,184,0,0.1);
+    background: rgba(232,184,107,0.1);
     color: var(--warn);
-    border-color: rgba(255,184,0,0.45);
+    border-color: rgba(232,184,107,0.45);
   }
   .btn-success {
-    background: linear-gradient(135deg, rgba(0,255,136,0.22), rgba(0,255,136,0.05));
+    background: linear-gradient(135deg, rgba(143,166,142,0.22), rgba(143,166,142,0.05));
     color: var(--win);
     border-color: var(--win);
-    text-shadow: 0 0 6px rgba(0,255,136,0.4);
+    text-shadow: 0 0 6px rgba(143,166,142,0.4);
   }
   .btn-success:hover {
-    box-shadow: 0 0 20px rgba(0,255,136,0.45);
+    box-shadow: 0 0 20px rgba(143,166,142,0.45);
     color: var(--win);
   }
 
@@ -1103,7 +1173,7 @@
   .round-info span {
     color: var(--accent);
     font-weight: 700;
-    text-shadow: 0 0 8px rgba(0,229,255,0.5);
+    text-shadow: 0 0 8px rgba(217,119,87,0.5);
     font-family: var(--f-mono);
   }
   .round-dots {
@@ -1123,12 +1193,12 @@
   .round-dot.done {
     background: var(--neon-green);
     border-color: var(--neon-green);
-    box-shadow: 0 0 8px rgba(0,255,136,0.65);
+    box-shadow: 0 0 8px rgba(143,166,142,0.65);
   }
   .round-dot.active {
     background: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 10px rgba(0,229,255,0.75);
+    box-shadow: 0 0 10px rgba(217,119,87,0.75);
     animation: dotBeat 1.4s ease-in-out infinite;
   }
   @keyframes dotBeat {
@@ -1154,7 +1224,7 @@
   .debrief-input    { min-height: 44px; }
   .commitment-input:focus, .debrief-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,255,0.15);
+    box-shadow: 0 0 0 3px rgba(217,119,87,0.15);
   }
 
   .debrief-q { margin-bottom: 10px; }
@@ -1190,10 +1260,10 @@
     color: #000;
     border-color: var(--neon-green);
     font-weight: 700;
-    box-shadow: 0 0 6px rgba(0,255,136,0.5);
+    box-shadow: 0 0 6px rgba(143,166,142,0.5);
   }
   .streak-day.partial {
-    background: rgba(0,229,255,0.28);
+    background: rgba(217,119,87,0.28);
     color: var(--accent);
     border-color: var(--accent);
   }
@@ -1208,7 +1278,7 @@
     inset: -3px;
     border-radius: 4px;
     border: 1px solid var(--neon-pink);
-    box-shadow: 0 0 10px rgba(255,46,108,0.8);
+    box-shadow: 0 0 10px rgba(184,91,61,0.8);
     animation: todayPulse 1.6s ease-in-out infinite;
     pointer-events: none;
   }
@@ -1220,9 +1290,9 @@
   /* ═══════════════ CRASH PROTOCOL ═══════════════ */
   .crash-card {
     background:
-      linear-gradient(135deg, rgba(255,53,85,0.1), rgba(255,53,85,0.02)),
+      linear-gradient(135deg, rgba(178,48,48,0.1), rgba(178,48,48,0.02)),
       var(--card);
-    border: 1px solid rgba(255,53,85,0.4);
+    border: 1px solid rgba(178,48,48,0.4);
     border-radius: 6px;
     padding: 14px;
     position: relative;
@@ -1242,7 +1312,7 @@
     margin-bottom: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    text-shadow: 0 0 8px rgba(255,53,85,0.4);
+    text-shadow: 0 0 8px rgba(178,48,48,0.4);
   }
 
   /* ═══════════════ SAVE BUTTON ═══════════════ */
@@ -1265,10 +1335,10 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     transition: all 0.2s;
-    box-shadow: 0 0 16px rgba(0,229,255,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+    box-shadow: 0 0 16px rgba(217,119,87,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
   }
   .btn-save:hover {
-    box-shadow: 0 0 28px rgba(0,229,255,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+    box-shadow: 0 0 28px rgba(217,119,87,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
     transform: translateY(-1px);
   }
 
@@ -1290,7 +1360,7 @@
     z-index: 9999;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
-    box-shadow: 0 0 20px rgba(0,255,136,0.35);
+    box-shadow: 0 0 20px rgba(143,166,142,0.35);
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
@@ -1308,9 +1378,9 @@
   }
   .badge {
     display: inline-block;
-    background: linear-gradient(135deg, rgba(0,229,255,0.2), rgba(0,229,255,0.05));
+    background: linear-gradient(135deg, rgba(217,119,87,0.2), rgba(217,119,87,0.05));
     color: var(--accent);
-    border: 1px solid rgba(0,229,255,0.4);
+    border: 1px solid rgba(217,119,87,0.4);
     border-radius: 3px;
     padding: 2px 8px;
     font-family: var(--f-head);
@@ -1407,7 +1477,7 @@
   }
   .check-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,255,0.15);
+    box-shadow: 0 0 0 3px rgba(217,119,87,0.15);
   }
   .check-input::placeholder { color: var(--muted); font-size: 0.74rem; }
 
@@ -1469,15 +1539,15 @@
   }
   .trophy-light.dur-15 {
     background: radial-gradient(circle at 30% 30%, #50ffb0, var(--neon-green));
-    box-shadow: 0 0 8px rgba(0,255,136,0.7), inset 0 -2px 3px rgba(0,0,0,0.25);
+    box-shadow: 0 0 8px rgba(143,166,142,0.7), inset 0 -2px 3px rgba(0,0,0,0.25);
   }
   .trophy-light.dur-25 {
     background: radial-gradient(circle at 30% 30%, #50e5ff, var(--neon-cyan));
-    box-shadow: 0 0 9px rgba(0,229,255,0.8), inset 0 -2px 3px rgba(0,0,0,0.25);
+    box-shadow: 0 0 9px rgba(217,119,87,0.8), inset 0 -2px 3px rgba(0,0,0,0.25);
   }
   .trophy-light.dur-45 {
     background: radial-gradient(circle at 30% 30%, #c7a9ff, var(--neon-purple));
-    box-shadow: 0 0 11px rgba(167,139,250,0.9), inset 0 -2px 3px rgba(0,0,0,0.25);
+    box-shadow: 0 0 11px rgba(232,184,107,0.9), inset 0 -2px 3px rgba(0,0,0,0.25);
   }
   @keyframes trophyAppear {
     0%   { transform: scale(0) rotate(180deg); opacity: 0; }
@@ -1539,11 +1609,11 @@
   }
   .sync-indicator.local   { color: var(--text-dim); }
   .sync-indicator.local::before { background: var(--muted); }
-  .sync-indicator.syncing { color: var(--warn); border-color: rgba(255,184,0,0.35); }
+  .sync-indicator.syncing { color: var(--warn); border-color: rgba(232,184,107,0.35); }
   .sync-indicator.syncing::before { background: var(--warn); box-shadow: 0 0 6px var(--warn); animation: statusPulse 1.2s ease-in-out infinite; }
-  .sync-indicator.synced  { color: var(--win);  border-color: rgba(0,255,136,0.35); }
+  .sync-indicator.synced  { color: var(--win);  border-color: rgba(143,166,142,0.35); }
   .sync-indicator.synced::before  { background: var(--win);  box-shadow: 0 0 6px var(--win); }
-  .sync-indicator.error   { color: var(--danger); border-color: rgba(255,53,85,0.4); }
+  .sync-indicator.error   { color: var(--danger); border-color: rgba(178,48,48,0.4); }
   .sync-indicator.error::before   { background: var(--danger); box-shadow: 0 0 6px var(--danger); animation: statusPulse 1s ease-in-out infinite; }
   .sync-indicator.offline { color: var(--muted); }
 
@@ -1579,18 +1649,18 @@
   .btn-auth:hover {
     border-color: var(--accent);
     color: var(--accent);
-    box-shadow: 0 0 10px rgba(0,229,255,0.2);
+    box-shadow: 0 0 10px rgba(217,119,87,0.2);
   }
   .btn-auth.danger:hover {
     border-color: var(--danger);
     color: var(--danger);
-    box-shadow: 0 0 10px rgba(255,53,85,0.2);
+    box-shadow: 0 0 10px rgba(178,48,48,0.2);
   }
   .btn-auth.primary {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(0,229,255,0.08);
-    text-shadow: 0 0 4px rgba(0,229,255,0.4);
+    background: rgba(217,119,87,0.08);
+    text-shadow: 0 0 4px rgba(217,119,87,0.4);
   }
 
   /* ═══════════════ LOGIN MODAL ═══════════════ */
@@ -1619,7 +1689,7 @@
     border-radius: 6px;
     padding: 30px 28px 26px;
     position: relative;
-    box-shadow: 0 0 40px rgba(0,229,255,0.2), 0 20px 60px rgba(0,0,0,0.6);
+    box-shadow: 0 0 40px rgba(217,119,87,0.2), 0 20px 60px rgba(0,0,0,0.6);
     animation: loginIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
   @keyframes loginIn {
@@ -1654,7 +1724,7 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--accent);
-    text-shadow: 0 0 10px rgba(0,229,255,0.5);
+    text-shadow: 0 0 10px rgba(217,119,87,0.5);
     margin-bottom: 4px;
     display: flex;
     align-items: center;
@@ -1685,7 +1755,7 @@
   }
   .login-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,229,255,0.15), 0 0 12px rgba(0,229,255,0.2);
+    box-shadow: 0 0 0 3px rgba(217,119,87,0.15), 0 0 12px rgba(217,119,87,0.2);
   }
   .login-input::placeholder { color: var(--muted); }
   .login-btn {
@@ -1702,10 +1772,10 @@
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 0 16px rgba(0,229,255,0.3);
+    box-shadow: 0 0 16px rgba(217,119,87,0.3);
   }
   .login-btn:hover:not(:disabled) {
-    box-shadow: 0 0 24px rgba(0,229,255,0.55);
+    box-shadow: 0 0 24px rgba(217,119,87,0.55);
     transform: translateY(-1px);
   }
   .login-btn:disabled {
@@ -1722,13 +1792,13 @@
   }
   .login-status.active { display: block; }
   .login-status.success {
-    background: rgba(0,255,136,0.08);
-    border: 1px solid rgba(0,255,136,0.35);
+    background: rgba(143,166,142,0.08);
+    border: 1px solid rgba(143,166,142,0.35);
     color: var(--win);
   }
   .login-status.error {
-    background: rgba(255,53,85,0.08);
-    border: 1px solid rgba(255,53,85,0.35);
+    background: rgba(178,48,48,0.08);
+    border: 1px solid rgba(178,48,48,0.35);
     color: var(--danger);
   }
   .login-hint {
@@ -1863,6 +1933,12 @@
     <div class="info-text" style="margin-top:12px; font-size:0.7rem;">
       ℹ️ 今晚寫完 → 明天「早晨開局」自動帶入<br>今天的 MIT 不會被覆蓋（鎖定到 00:00）
     </div>
+    <div class="save-row" style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+      <button class="btn-save" onclick="saveNight()">💾 存檔今晚設定</button>
+      <div class="info-text" style="margin-top:6px; font-size:0.66rem; text-align:center;">
+        每次存檔會自動歸檔到 raw/，讓 Claude 之後可彙整
+      </div>
+    </div>
   </div>
 
   <div class="card" data-area="mit">
@@ -1934,30 +2010,26 @@
     </div>
   </div>
 
-  <div class="card" data-area="ifthen">
+  <div class="card ifthen-card" data-area="ifthen">
     <div class="card-title">03 · 自訂 if-then 規則</div>
-    <div class="info-text" style="margin-bottom:10px">把行為寫成「如果…就…」，大腦不需現場掙扎</div>
+    <div class="info-text" style="margin-bottom:8px; font-size:0.72rem;">把行為寫成「如果…就…」，大腦不需現場掙扎</div>
     <div class="ifthen-row">
       <span class="ifthen-tag">如果</span>
       <input class="ifthen-input" id="ifthenIf" placeholder="明早鬧鐘一響…">
     </div>
-    <div class="ifthen-row" style="margin-top:8px">
-      <span class="ifthen-tag" style="background:linear-gradient(135deg,rgba(0,255,136,0.2),rgba(0,255,136,0.05));color:var(--accent2);border-color:rgba(0,255,136,0.4);text-shadow:0 0 6px rgba(0,255,136,0.4);">就</span>
+    <div class="ifthen-row">
+      <span class="ifthen-tag tag-then">就</span>
       <input class="ifthen-input" id="ifthenThen" placeholder="腳落地同時把手機扔到客廳…">
     </div>
-    <div class="info-text" style="margin-top:10px; padding:10px; background:rgba(255,184,0,0.06); border:1px solid rgba(255,184,0,0.25); border-radius:4px;">
-      ⚠ 提示：前夜七件事完成率低於 4/7，明天的早晨阻力會上升 3–5 倍。
+    <div class="info-text" style="margin-top:8px; padding:6px 10px; background:rgba(217,119,87,0.08); border:1px solid rgba(217,119,87,0.25); border-radius:4px; font-size:0.7rem;">
+      ⚠ 前夜七件事 < 4/7 → 早晨阻力上升 3–5 倍
     </div>
-  </div>
-
-  <div class="save-row" data-area="save">
-    <button class="btn-save" onclick="saveNight()">💾 存檔今晚設定</button>
   </div>
 </div>
 
 <!-- ═══════════════ 早晨開局 ═══════════════ -->
 <div class="phase-panel" id="panel-morning">
-  <div class="card" data-area="warn" style="border-color: rgba(255,184,0,0.35); background: linear-gradient(180deg, rgba(255,184,0,0.06), var(--card-2));">
+  <div class="card" data-area="warn" style="border-color: rgba(232,184,107,0.35); background: linear-gradient(180deg, rgba(232,184,107,0.06), var(--card-2));">
     <div class="card-title" style="color: var(--warn);">⚠️ 前 60 分鐘決定今天的預設模式</div>
     <div class="info-text">睜眼第一件事是刷手機 → 大腦設成「被動接收」模式，一整天都難切換。</div>
   </div>
@@ -2010,17 +2082,12 @@
     </div>
   </div>
 
-  <div class="card" data-area="mit2">
-    <div class="card-title">今天的 MIT · 昨晚寫的</div>
-    <div class="mit-label">中途想調整直接改這裡 · 存檔自動同步</div>
-    <textarea class="mit-input" id="todayMIT" placeholder="（昨晚還沒規劃 → 現在寫下今天的 MIT）" rows="2"></textarea>
-    <div class="time-row">
-      <label>開始</label>
-      <input type="time" class="time-input" id="todayMitStart" value="08:00">
-      <label>結束</label>
-      <input type="time" class="time-input" id="todayMitEnd" value="08:30">
-    </div>
-    <div id="todayReasonDisplay" class="info-text" style="margin-top:10px; padding:10px; background:rgba(0,229,255,0.05); border:1px solid rgba(0,229,255,0.2); border-radius:4px; display:none;"></div>
+  <!-- 隱藏 MIT 編輯區（已置頂在 MIT bar，但保留 input 給 auto-save） -->
+  <div style="display:none">
+    <textarea id="todayMIT"></textarea>
+    <input type="time" id="todayMitStart" value="08:00">
+    <input type="time" id="todayMitEnd" value="08:30">
+    <div id="todayReasonDisplay"></div>
   </div>
 
   <!-- ─── 待辦清單（軟鎖：MIT 沒勾時半透明 + 提示） ─── -->
@@ -2082,12 +2149,12 @@
 
 <!-- ═══════════════ 下午推進（簡化版：3 題填空） ═══════════════ -->
 <div class="phase-panel" id="panel-afternoon">
-  <div class="card" data-area="info" style="border-color:rgba(255,184,0,0.28); background: linear-gradient(180deg, rgba(255,184,0,0.05), var(--card-2));">
+  <div class="card" data-area="info" style="border-color:rgba(232,184,107,0.28); background: linear-gradient(180deg, rgba(232,184,107,0.05), var(--card-2));">
     <div class="card-title" style="color:var(--warn);">中場檢查（14:00 左右）</div>
     <div class="info-text" style="font-size:0.78rem; line-height:1.6;">
       早上的計畫常常下午就漂走了。<br>
       花 3 分鐘填這三題，把自己拉回正軌。<br>
-      <strong style="color:var(--accent); text-shadow:0 0 6px rgba(0,229,255,0.4);">不要切方向</strong> — 切換任務是一天最大的隱形損耗。
+      <strong style="color:var(--accent); text-shadow:0 0 6px rgba(217,119,87,0.4);">不要切方向</strong> — 切換任務是一天最大的隱形損耗。
     </div>
   </div>
 
@@ -2111,19 +2178,18 @@
     </div>
   </div>
 
-  <div class="card" data-area="anchor">
-    <div class="card-title">明日啟動錨點</div>
-    <div class="info-text" style="margin-bottom:8px">下班前留下：下一步是什麼・文件在哪・明天幾點開始</div>
-    <textarea class="debrief-input" id="tomorrowAnchor" placeholder="下一步：____&#10;文件位置：____&#10;明天開始時間：____" style="min-height:120px; font-family: var(--f-mono); font-size:0.8rem;"></textarea>
+  <!-- 隱藏 anchor input（保留給 auto-save 不報錯） -->
+  <div style="display:none">
+    <textarea id="tomorrowAnchor"></textarea>
   </div>
 </div>
 
 <!-- ═══════════════ 晚間複盤 ═══════════════ -->
 <div class="phase-panel" id="panel-debrief">
-  <div class="card" data-area="rule5" style="border-color:rgba(0,255,136,0.28); background: linear-gradient(180deg, rgba(0,255,136,0.04), var(--card-2));">
+  <div class="card" data-area="rule5" style="border-color:rgba(143,166,142,0.28); background: linear-gradient(180deg, rgba(143,166,142,0.04), var(--card-2));">
     <div class="card-title" style="color:var(--win)">複盤守則</div>
     <div class="info-text" style="font-size:0.78rem; line-height:1.65;">
-      複盤是<strong style="color:var(--win); text-shadow:0 0 6px rgba(0,255,136,0.4);">系統升級入口</strong>，不是自責大會。<br>
+      複盤是<strong style="color:var(--win); text-shadow:0 0 6px rgba(143,166,142,0.4);">系統升級入口</strong>，不是自責大會。<br>
       自責 → 訊號「你又不行」→ 直接抹掉今天所有獎勵。<br>
       <span style="color:var(--text);">5 句話，15 分鐘，完成。</span>
     </div>
@@ -2633,14 +2699,165 @@ function updateNightProgress() {
 }
 
 // ─── Night Save ───
-function saveNight() {
+async function saveNight() {
   state.nightMIT = document.getElementById('nightMIT').value;
   state.mitStart = document.getElementById('mitStart').value;
   state.mitEnd = document.getElementById('mitEnd').value;
   state.ifthenIf = document.getElementById('ifthenIf').value;
   state.ifthenThen = document.getElementById('ifthenThen').value;
   save();
-  showToast('✅ 前夜設定已存檔！明天加油！');
+  // 同時匯出 markdown 到 raw/（File System Access API 或下載 fallback）
+  await exportNightToRaw();
+}
+
+// ─── 匯出前夜內容到 raw/ ───
+function generateNightMarkdown() {
+  const today = todayKey();
+  const nightChecks = state.nightChecks || {};
+  const checkLabels = {
+    n1: '寫下明天的第一任務',
+    n2: '準備環境',
+    n3: '誘惑入口封鎖',
+    n4: '寫一條 if-then',
+    n5: '寫一句「明天為什麼要做」',
+    n6: '數位日落 · 睡前 1 小時關螢幕',
+    n7: '思緒傾倒 · 睡前把盤旋的想法寫下來'
+  };
+  const checkLines = Object.entries(checkLabels)
+    .map(([k, v]) => `- [${nightChecks[k] ? 'x' : ' '}] ${v}`)
+    .join('\n');
+  let done = 0;
+  for (let i = 1; i <= 7; i++) if (nightChecks['n'+i]) done++;
+
+  return `---
+title: 前夜清障 ${today}
+date: ${today}
+type: night-prep
+score: ${done}/7
+source: 24h-life-system
+---
+
+# 前夜清障 — ${today}
+
+## 任務完成度：${done}/7
+
+## 明天的 MIT
+${(state.nightMIT || '（未填）').trim()}
+
+時間：${state.mitStart || '08:00'} – ${state.mitEnd || '08:30'}
+
+## 明天為什麼要做（動機）
+${(state.nightReason || '（未填）').trim()}
+
+## If-Then 規則
+- 如果：${(state.ifthenIf || '（未填）').trim()}
+- 就：${(state.ifthenThen || '（未填）').trim()}
+
+## 思緒傾倒（Brain Dump）
+${(state.nightBrainDump || '（未填）').trim()}
+
+## 前夜七件事檢核
+${checkLines}
+
+---
+*由 24h-life-system 自動產生 @ ${new Date().toISOString()}*
+`;
+}
+
+// IndexedDB helper（持久化 directoryHandle）
+function _idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('life24h', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('kv');
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbGet(key) {
+  try {
+    const db = await _idbOpen();
+    return await new Promise((resolve) => {
+      const tx = db.transaction('kv', 'readonly');
+      const r = tx.objectStore('kv').get(key);
+      r.onsuccess = () => resolve(r.result || null);
+      r.onerror   = () => resolve(null);
+    });
+  } catch { return null; }
+}
+async function idbSet(key, val) {
+  try {
+    const db = await _idbOpen();
+    return await new Promise((resolve) => {
+      const tx = db.transaction('kv', 'readwrite');
+      tx.objectStore('kv').put(val, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror    = () => resolve();
+    });
+  } catch {}
+}
+
+async function getRawDirHandle({ promptIfNeeded = true } = {}) {
+  if (!('showDirectoryPicker' in window)) return null;
+  let handle = await idbGet('rawDirHandle');
+  if (handle) {
+    try {
+      const perm = await handle.queryPermission({ mode: 'readwrite' });
+      if (perm === 'granted') return handle;
+      if (promptIfNeeded) {
+        const req = await handle.requestPermission({ mode: 'readwrite' });
+        if (req === 'granted') return handle;
+      }
+    } catch { /* fall through */ }
+  }
+  if (!promptIfNeeded) return null;
+  try {
+    handle = await window.showDirectoryPicker({
+      id: 'lifeRawDir',
+      mode: 'readwrite',
+      startIn: 'desktop'
+    });
+    await idbSet('rawDirHandle', handle);
+    showToast('📁 raw/ 資料夾已綁定，之後會自動寫入');
+    return handle;
+  } catch { return null; }
+}
+
+async function exportNightToRaw() {
+  const md = generateNightMarkdown();
+  const filename = `night_${todayKey()}.md`;
+
+  // Path 1: File System Access API（桌面 Chrome/Edge）
+  if ('showDirectoryPicker' in window) {
+    const dir = await getRawDirHandle({ promptIfNeeded: true });
+    if (dir) {
+      try {
+        const fileHandle = await dir.getFileHandle(filename, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(md);
+        await writable.close();
+        showToast(`✅ 已存到 raw/${filename} · 明天加油！`);
+        return;
+      } catch (e) {
+        console.warn('[exportNightToRaw] write failed', e);
+      }
+    }
+  }
+
+  // Path 2: Fallback — 下載到瀏覽器下載資料夾
+  try {
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`📥 ${filename} 已下載 · 請手動移到 進化/raw/`);
+  } catch (e) {
+    showToast('⚠ 存檔到本地失敗，但雲端已同步');
+  }
 }
 
 // ─── Morning: show yesterday's "why" reason ───
@@ -2649,7 +2866,7 @@ function updateTodayReasonDisplay() {
   if (!el) return;
   const reason = (state.todayReason || '').trim();
   if (!reason) { el.style.display = 'none'; return; }
-  el.innerHTML = `<strong style="color:var(--accent); text-shadow:0 0 4px rgba(0,229,255,0.3); letter-spacing:0.05em;">💡 昨晚你寫下的動機</strong><br><span style="color:var(--text); font-size:0.88rem; line-height:1.55; display:block; margin-top:4px;">${reason.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</span>`;
+  el.innerHTML = `<strong style="color:var(--accent); text-shadow:0 0 4px rgba(217,119,87,0.3); letter-spacing:0.05em;">💡 昨晚你寫下的動機</strong><br><span style="color:var(--text); font-size:0.88rem; line-height:1.55; display:block; margin-top:4px;">${reason.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</span>`;
   el.style.display = 'block';
 }
 
