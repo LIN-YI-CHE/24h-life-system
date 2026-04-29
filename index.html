@@ -10,27 +10,27 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    /* ── Claude 橘黑配色 ── */
-    --bg:            #14110D;   /* 暖黑底 */
-    --bg-2:          #1B1814;   /* 略亮底 */
-    --card:          #211D17;   /* 卡片 */
-    --card-2:        #2A251E;   /* 卡片 hover/elevated */
-    --border:        #3A3328;   /* 邊界 */
-    --border-bright: #50432F;   /* 強調邊界 */
+    /* ── Claude Code 桌面版配色（暖灰 + 低飽和橘） ── */
+    --bg:            #262624;   /* Claude desktop 主背景（暖中性灰）*/
+    --bg-2:          #2E2E2B;
+    --card:          #313130;   /* 卡片底（更貼近 Claude UI 卡片色）*/
+    --card-2:        #3B3B38;
+    --border:        #44443F;
+    --border-bright: #5C5B55;
 
-    /* 主色：Claude 暖橘 */
-    --orange:        #D97757;   /* 主橘 */
-    --orange-deep:   #B85B3D;   /* 深橘 */
-    --orange-light:  #E89370;   /* 亮橘 */
-    --cream:         #F5EDE0;   /* 暖白 */
-    --gold:          #E8B86B;   /* 暖金（次要強調） */
-    --sage:          #8FA68E;   /* 鼠尾草綠（成功 / 柔和正向） */
-    --rust:          #C25E3D;   /* 鏽紅（警告） */
-    --crimson:       #B23030;   /* 危險 */
+    /* 主色：Claude 標誌橘（低飽和） */
+    --orange:        #D97757;
+    --orange-deep:   #B85B3D;
+    --orange-light:  #E89370;
+    --cream:         #F5EFE6;
+    --gold:          #C9A66B;
+    --sage:          #8FA68E;
+    --rust:          #C25E3D;
+    --crimson:       #B23030;
 
-    --text:          #F2EADD;   /* 主文字（暖白） */
-    --text-dim:      #BFB4A1;   /* 次要文字 */
-    --muted:         #8A7E6B;   /* 弱文字 */
+    --text:          #EDE5D7;   /* 主文字（暖米白） */
+    --text-dim:      #B5AC9C;
+    --muted:         #807868;
 
     /* ── Semantic（語意對應）── */
     --accent:  var(--orange);
@@ -55,7 +55,7 @@
     --f-body:    'Manrope', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
 
     /* ── 基礎尺度 ── */
-    --base-size: 16px;
+    --base-size: 18px;
   }
   html { font-size: var(--base-size); }
 
@@ -1321,25 +1321,37 @@
     justify-content: flex-end;
     margin-top: 2px;
   }
+  .night-save-row {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    justify-content: center;
+  }
   .btn-save {
-    background: linear-gradient(135deg, var(--accent), #0099D8);
-    border: 1px solid var(--accent);
-    color: #000;
-    padding: 10px 22px;
-    min-height: 42px;
-    border-radius: 4px;
+    background: var(--card-2);
+    border: 1px solid var(--border-bright);
+    color: var(--text);
+    padding: 9px 24px;
+    min-height: 40px;
+    border-radius: 5px;
     cursor: pointer;
     font-family: var(--f-head);
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: none;
     transition: all 0.2s;
-    box-shadow: 0 0 16px rgba(217,119,87,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
   }
   .btn-save:hover {
-    box-shadow: 0 0 28px rgba(217,119,87,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
-    transform: translateY(-1px);
+    background: var(--card);
+    border-color: var(--orange);
+    color: var(--orange);
+  }
+  .btn-record {
+    min-width: 120px;
+  }
+  .btn-record:hover {
+    background: rgba(217,119,87,0.08);
   }
 
   /* ═══════════════ TOAST ═══════════════ */
@@ -1933,11 +1945,8 @@
     <div class="info-text" style="margin-top:12px; font-size:0.7rem;">
       ℹ️ 今晚寫完 → 明天「早晨開局」自動帶入<br>今天的 MIT 不會被覆蓋（鎖定到 00:00）
     </div>
-    <div class="save-row" style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
-      <button class="btn-save" onclick="saveNight()">💾 存檔今晚設定</button>
-      <div class="info-text" style="margin-top:6px; font-size:0.66rem; text-align:center;">
-        每次存檔會自動歸檔到 raw/，讓 Claude 之後可彙整
-      </div>
+    <div class="save-row night-save-row">
+      <button class="btn-save btn-record" onclick="saveNight()">紀錄</button>
     </div>
   </div>
 
